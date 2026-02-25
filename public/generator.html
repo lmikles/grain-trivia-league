@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Question Generator — Grain Trivia League</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1c1c1c;
+      --surface2: #252525;
+      --border: #333;
+      --amber: #f59e0b;
+      --amber-light: #fcd34d;
+      --text: #f0f0f0;
+      --text-dim: #888;
+      --green: #22c55e;
+      --red: #ef4444;
+      --blue: #60a5fa;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── AUTH GATE ─────────────────────────────────────────────────────────── */
+    #authGate {
+      max-width: 380px;
+      margin: 8rem auto;
+      padding: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      text-align: center;
+    }
+    #authGate .eyebrow { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    #authGate h1 { font-size: 1.6rem; margin-bottom: 0.35rem; }
+    #authGate h1 span { color: var(--amber); }
+    #authGate p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    #authGate input {
+      width: 100%; padding: 0.75rem 1rem;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-size: 1rem; margin-bottom: 0.75rem;
+    }
+    #authGate input:focus { outline: 2px solid var(--amber); }
+    #authGate button {
+      width: 100%; padding: 0.8rem; background: var(--amber); color: #000;
+      border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer;
+    }
+    #authGate button:hover { background: var(--amber-light); }
+    .auth-error { color: var(--red); margin-top: 0.6rem; font-size: 0.85rem; }
+
+    /* ── MAIN LAYOUT ───────────────────────────────────────────────────────── */
+    #mainTool { display: none; max-width: 860px; margin: 0 auto; padding: 1.25rem; }
+
+    header { padding: 1.25rem 0; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+    header .eyebrow { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+    header h1 { font-size: 1.4rem; margin: 0.2rem 0 0.5rem; }
+    header h1 span { color: var(--amber); }
+    header nav a { color: var(--text-dim); text-decoration: none; font-size: 0.85rem; margin-right: 1.25rem; }
+    header nav a:hover { color: var(--amber); }
+
+    /* ── SETUP CARD ────────────────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 1.25rem;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .card-header h2 { font-size: 0.95rem; font-weight: 600; }
+    .card-header .badge {
+      font-size: 0.72rem; color: var(--text-dim);
+      background: var(--bg); border: 1px solid var(--border);
+      padding: 0.2rem 0.5rem; border-radius: 100px;
+    }
+
+    .setup-body { padding: 1.25rem; }
+
+    .section-divider {
+      font-size: 0.72rem; color: var(--amber); text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.6rem 0 0.4rem; margin-top: 0.25rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 0.75rem;
+    }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1.25rem; margin-bottom: 0.75rem; }
+    .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .form-grid.single { grid-template-columns: 1fr; }
+
+    .field { display: flex; flex-direction: column; gap: 0.3rem; }
+    .field label { font-size: 0.75rem; color: var(--text-dim); }
+    .field input, .field select {
+      padding: 0.55rem 0.75rem;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text); font-size: 0.9rem;
+    }
+    .field input:focus, .field select:focus { outline: 2px solid var(--amber); outline-offset: -1px; }
+    .field .hint { font-size: 0.72rem; color: var(--text-dim); }
+
+    /* ── ACTIONS ───────────────────────────────────────────────────────────── */
+    .actions { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .btn-primary {
+      padding: 0.85rem 1.5rem; background: var(--amber); color: #000;
+      border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      width: 100%;
+    }
+    .btn-primary:hover { background: var(--amber-light); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .single-rounds { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+    .single-rounds .label { font-size: 0.8rem; color: var(--text-dim); margin-right: 0.25rem; }
+    .btn-sm {
+      padding: 0.38rem 0.75rem;
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border); border-radius: 6px; font-size: 0.82rem; cursor: pointer;
+    }
+    .btn-sm:hover { border-color: var(--amber); color: var(--amber); }
+    .btn-sm:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── STATUS BAR ────────────────────────────────────────────────────────── */
+    #statusBar {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: none;
+    }
+    #statusBar.visible { display: block; }
+    .status-title { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .status-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.2rem 0; font-size: 0.88rem; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--border); }
+    .status-item.pending .status-dot { background: var(--text-dim); }
+    .status-item.loading .status-dot { background: var(--amber); animation: pulse 0.9s ease-in-out infinite; }
+    .status-item.done .status-dot { background: var(--green); }
+    .status-item.error .status-dot { background: var(--red); }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+    /* ── RESULTS ───────────────────────────────────────────────────────────── */
+    #results { display: none; }
+    #results.visible { display: block; }
+    .results-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .results-header h2 { font-size: 1rem; font-weight: 600; }
+    .results-meta { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.15rem; }
+
+    /* ── ROUND CARDS ───────────────────────────────────────────────────────── */
+    .round-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      margin-bottom: 1.25rem; overflow: hidden;
+    }
+    .round-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.85rem 1.25rem; background: var(--surface2); border-bottom: 1px solid var(--border);
+    }
+    .round-meta { display: flex; flex-direction: column; gap: 0.2rem; }
+    .round-meta .round-title { font-size: 0.95rem; font-weight: 600; }
+    .round-meta .round-sub { font-size: 0.78rem; color: var(--text-dim); }
+    .round-btns { display: flex; gap: 0.4rem; }
+
+    .questions-body { padding: 1.25rem; }
+
+    .q-item { padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+    .q-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .q-num { font-size: 0.7rem; font-weight: 700; color: var(--amber); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.2rem; }
+    .q-text { font-size: 0.92rem; line-height: 1.5; margin-bottom: 0.3rem; }
+    .q-answer { font-size: 0.88rem; color: var(--green); }
+    .q-answer::before { content: '✓ '; font-weight: 700; }
+
+    /* Last Call extra info */
+    .lastcall-note {
+      margin: 0.75rem 1.25rem 0;
+      padding: 0.6rem 0.9rem;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 8px;
+      font-size: 0.82rem; color: var(--amber);
+    }
+
+    /* Error state */
+    .round-error {
+      padding: 1.25rem; color: var(--red); font-size: 0.9rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+
+    /* ── PRINT ─────────────────────────────────────────────────────────────── */
+    @media print {
+      body { background: white; color: #111; font-size: 11pt; }
+      #authGate, #statusBar, .setup-card, .results-header,
+      .round-btns, header nav, .actions { display: none !important; }
+
+      #mainTool { max-width: 100%; padding: 0; }
+      header { border-bottom: 1px solid #ccc; margin-bottom: 0.75rem; }
+      header .eyebrow { color: #555; }
+      header h1 span { color: #000; }
+
+      .round-card {
+        border: 1px solid #ccc; border-radius: 0;
+        margin-bottom: 0;
+        page-break-after: always; break-after: page;
+      }
+      .round-card:last-child { page-break-after: auto; break-after: auto; }
+      .round-header { background: #f0f0f0; }
+      .round-meta .round-sub { color: #555; }
+      .q-num { color: #555; }
+      .q-answer { color: #1a6b1a; }
+      .q-item { border-bottom: 1px solid #ddd; }
+      .lastcall-note { border-color: #ccc; color: #555; background: #fafafa; }
+    }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid.three { grid-template-columns: 1fr; }
+      .single-rounds { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── AUTH GATE ─────────────────────────────────────────────────────────── -->
+<div id="authGate">
+  <div class="eyebrow">Grain Craft Bar + Kitchen</div>
+  <h1>Trivia <span>Generator</span></h1>
+  <p>Host access required to generate questions</p>
+  <input type="password" id="secretInput" placeholder="Enter host secret" autocomplete="off" />
+  <button onclick="unlock()">Unlock Generator</button>
+  <div id="authError" class="auth-error"></div>
+</div>
+
+<!-- ── MAIN TOOL ──────────────────────────────────────────────────────────── -->
+<div id="mainTool">
+  <header>
+    <div class="eyebrow">Grain Craft Bar + Kitchen — Trivia League</div>
+    <h1>Question <span>Generator</span></h1>
+    <nav>
+      <a href="/host.html">↩ Score Entry</a>
+      <a href="/leaderboard.html">Leaderboard</a>
+      <a href="/">Home</a>
+    </nav>
+  </header>
+
+  <!-- WEEK SETUP ─────────────────────────────────────────────────────────── -->
+  <div class="card setup-card">
+    <div class="card-header">
+      <h2>Week Setup</h2>
+      <span class="badge">All fields used for full-night generation</span>
+    </div>
+    <div class="setup-body">
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Week Number (optional label)</label>
+          <input type="number" id="weekNum" min="1" placeholder="e.g. 12" />
+        </div>
+        <div class="field">
+          <label>Round 3 Subcategory</label>
+          <select id="r3Sub">
+            <option value="Geography">Geography</option>
+            <option value="Science &amp; Nature">Science &amp; Nature</option>
+            <option value="History">History</option>
+            <option value="Current Events">Current Events</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-divider">Round 2 — Weekly Theme (one per location)</div>
+      <div class="form-grid three">
+        <div class="field">
+          <label>Main Street</label>
+          <input type="text" id="r2Main" placeholder="e.g. 80s Music" />
+        </div>
+        <div class="field">
+          <label>Exchange</label>
+          <input type="text" id="r2Exchange" placeholder="e.g. Delaware History" />
+        </div>
+        <div class="field">
+          <label>H2O</label>
+          <input type="text" id="r2H2O" placeholder="e.g. Sports Legends" />
+        </div>
+      </div>
+
+      <div class="section-divider">Lightning Round &amp; Last Call</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Last Call Category <span style="color:var(--red)">*</span></label>
+          <input type="text" id="lastCallCat" placeholder="e.g. World Capitals, Oscar Winners" />
+          <span class="hint">Announced to teams before they wager — must be specific</span>
+        </div>
+        <div class="field">
+          <label>Lightning Round Topic (optional)</label>
+          <input type="text" id="lightningTopic" placeholder="Leave blank for mixed topics" />
+          <span class="hint">If blank, generator picks a variety of topics</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" id="btnFullNight" onclick="generateFullNight()">
+          ⚡ Generate Full Night — All Rounds, All Locations
+        </button>
+        <div class="single-rounds">
+          <span class="label">Or one round at a time:</span>
+          <button class="btn-sm" onclick="genSingle('round1')">Round 1</button>
+          <button class="btn-sm" onclick="genSingle('round2','Main Street')">Round 2 · Main St</button>
+          <button class="btn-sm" onclick="genSingle('round2','Exchange')">Round 2 · Exchange</button>
+          <button class="btn-sm" onclick="genSingle('round2','H2O')">Round 2 · H2O</button>
+          <button class="btn-sm" onclick="genSingle('round3')">Round 3</button>
+          <button class="btn-sm" onclick="genSingle('lightning')">Lightning</button>
+          <button class="btn-sm" onclick="genSingle('lastcall')">Last Call</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR ─────────────────────────────────────────────────────────── -->
+  <div id="statusBar">
+    <div class="status-title">Generating questions…</div>
+    <div id="statusItems"></div>
+  </div>
+
+  <!-- RESULTS ────────────────────────────────────────────────────────────── -->
+  <div id="results">
+    <div class="results-header">
+      <div>
+        <h2 id="resultsTitle">Generated Questions</h2>
+        <div class="results-meta" id="resultsMeta"></div>
+      </div>
+      <button class="btn-sm" onclick="window.print()">🖨️ Print All</button>
+    </div>
+    <div id="roundsContainer"></div>
+  </div>
+</div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let SECRET = '';
+let BUSY = false;
+const CARD_OPTS = {};  // cardId → API body (for regeneration)
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+document.getElementById('secretInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') unlock();
+});
+
+function unlock() {
+  const val = document.getElementById('secretInput').value.trim();
+  if (!val) { setAuthErr('Please enter your host secret.'); return; }
+  SECRET = val;
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('mainTool').style.display = 'block';
+}
+
+function setAuthErr(msg) {
+  document.getElementById('authError').textContent = msg;
+}
+
+function resetToAuthGate() {
+  SECRET = '';
+  document.getElementById('authError').textContent = 'Invalid secret — try again.';
+  document.getElementById('secretInput').value = '';
+  document.getElementById('mainTool').style.display = 'none';
+  document.getElementById('authGate').style.display = 'block';
+}
+
+// ── Inputs ────────────────────────────────────────────────────────────────────
+function getInputs() {
+  return {
+    week:          document.getElementById('weekNum').value.trim() || null,
+    r2Main:        document.getElementById('r2Main').value.trim(),
+    r2Exchange:    document.getElementById('r2Exchange').value.trim(),
+    r2H2O:         document.getElementById('r2H2O').value.trim(),
+    r3Sub:         document.getElementById('r3Sub').value,
+    lastCallCat:   document.getElementById('lastCallCat').value.trim(),
+    lightningTopic:document.getElementById('lightningTopic').value.trim(),
+  };
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function callApi(body) {
+  const resp = await fetch('/api/trivia', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${SECRET}`,
+    },
+    body: JSON.stringify(body),
+  });
+  if (resp.status === 401) { resetToAuthGate(); throw new Error('Unauthorized'); }
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
+  return data;
+}
+
+// ── Busy state ────────────────────────────────────────────────────────────────
+function setBusy(on) {
+  BUSY = on;
+  document.querySelectorAll('.btn-primary, .btn-sm').forEach(b => b.disabled = on);
+}
+
+// ── Status bar ────────────────────────────────────────────────────────────────
+function showStatus(items) {
+  const bar = document.getElementById('statusBar');
+  const container = document.getElementById('statusItems');
+  container.innerHTML = items.map(({ id, label }) =>
+    `<div class="status-item loading" id="si-${id}"><div class="status-dot"></div><span>${esc(label)}</span></div>`
+  ).join('');
+  bar.classList.add('visible');
+}
+
+function setStatus(id, state) {
+  const el = document.getElementById(`si-${id}`);
+  if (el) el.className = `status-item ${state}`;
+}
+
+function hideStatus() {
+  document.getElementById('statusBar').classList.remove('visible');
+}
+
+// ── Escape ────────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Question HTML ─────────────────────────────────────────────────────────────
+function questionsHtml(questions) {
+  return questions.map(q => `
+    <div class="q-item">
+      <div class="q-num">Q${q.number}</div>
+      <div class="q-text">${esc(q.question)}</div>
+      <div class="q-answer">${esc(q.answer)}</div>
+    </div>
+  `).join('');
+}
+
+// ── Render a round card ───────────────────────────────────────────────────────
+function makeCard(data, cardId) {
+  const card = document.createElement('div');
+  card.className = 'round-card';
+  card.id = cardId;
+
+  CARD_OPTS[cardId] = data._opts;
+
+  const pts = data.pointsEach === 'wagered'
+    ? 'wagered'
+    : `${data.pointsEach}pt each`;
+
+  const sub = `${esc(data.category)} · ${data.questionCount} question${data.questionCount !== 1 ? 's' : ''} · ${pts}`;
+
+  const lcNote = data.round === 'lastcall' ? `
+    <div class="lastcall-note">
+      ⚠️ Announce the category ("${esc(data.category)}") first — teams wager before hearing the question.
+    </div>
+  ` : '';
+
+  card.innerHTML = `
+    <div class="round-header">
+      <div class="round-meta">
+        <span class="round-title">${esc(data.title)}${data.location ? ' — ' + esc(data.location) : ''}</span>
+        <span class="round-sub">${sub}</span>
+      </div>
+      <div class="round-btns">
+        <button class="btn-sm" data-action="print" data-card="${cardId}">🖨️</button>
+        <button class="btn-sm" data-action="regen" data-card="${cardId}">↺ Regenerate</button>
+      </div>
+    </div>
+    ${lcNote}
+    <div class="questions-body">${questionsHtml(data.questions)}</div>
+  `;
+
+  return card;
+}
+
+function makeErrorCard(cardId, label, regenOpts) {
+  const card = document.createElement('div');
+  card.className = 'round-card';
+  card.id = cardId;
+  CARD_OPTS[cardId] = regenOpts;
+  card.innerHTML = `
+    <div class="round-header">
+      <div class="round-meta"><span class="round-title">${esc(label)}</span></div>
+      <div class="round-btns">
+        <button class="btn-sm" data-action="regen" data-card="${cardId}">↺ Retry</button>
+      </div>
+    </div>
+    <div class="round-error">⚠️ Generation failed — click Retry to try again.</div>
+  `;
+  return card;
+}
+
+function placeCard(card) {
+  const existing = document.getElementById(card.id);
+  if (existing) existing.replaceWith(card);
+  else document.getElementById('roundsContainer').appendChild(card);
+}
+
+// ── Event delegation for card buttons ─────────────────────────────────────────
+document.getElementById('roundsContainer')?.addEventListener('click', handleCardClick);
+// Wire up after DOM ready (roundsContainer is always present):
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('roundsContainer').addEventListener('click', handleCardClick);
+});
+
+function handleCardClick(e) {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const { action, card } = btn.dataset;
+  if (action === 'regen') regenCard(card);
+  if (action === 'print') printCard(card);
+}
+
+// ── Print a single round card ─────────────────────────────────────────────────
+function printCard(cardId) {
+  const el = document.getElementById(cardId);
+  if (!el) return;
+  const win = window.open('', '_blank', 'width=700,height=700');
+  win.document.write(`<!DOCTYPE html><html><head><title>Grain Trivia</title><style>
+    body { font-family: system-ui, sans-serif; padding: 1rem; color: #111; font-size: 11pt; }
+    .round-header { background: #f0f0f0; padding: 0.75rem 1rem; border: 1px solid #ccc; border-bottom: none; }
+    .round-title { font-size: 1rem; font-weight: 700; display: block; }
+    .round-sub { font-size: 0.8rem; color: #555; }
+    .round-btns { display: none; }
+    .questions-body { border: 1px solid #ccc; padding: 0.75rem 1rem; }
+    .q-item { padding: 0.6rem 0; border-bottom: 1px solid #e0e0e0; }
+    .q-item:last-child { border-bottom: none; }
+    .q-num { font-size: 0.7em; font-weight: 700; color: #666; text-transform: uppercase; margin-bottom: 0.15rem; }
+    .q-text { margin-bottom: 0.25rem; }
+    .q-answer { color: #1a6b1a; }
+    .q-answer::before { content: '✓ '; font-weight: 700; }
+    .lastcall-note { margin: 0.5rem 0; padding: 0.5rem 0.75rem; border: 1px solid #ccc; background: #fffbf0; font-size: 0.85rem; color: #7a5a00; }
+    .round-error { display: none; }
+  </style></head><body>${el.innerHTML}</body></html>`);
+  win.document.close();
+  win.onload = () => { win.focus(); win.print(); };
+}
+
+// ── Regenerate a card ─────────────────────────────────────────────────────────
+async function regenCard(cardId) {
+  if (BUSY) return;
+  const opts = CARD_OPTS[cardId];
+  if (!opts) return;
+
+  setBusy(true);
+  showStatus([{ id: 'regen', label: 'Regenerating…' }]);
+
+  try {
+    const data = await callApi(opts);
+    data._opts = opts;
+    const card = makeCard(data, cardId);
+    placeCard(card);
+    setStatus('regen', 'done');
+  } catch (err) {
+    setStatus('regen', 'error');
+    console.error(err);
+  }
+
+  setTimeout(hideStatus, 1800);
+  setBusy(false);
+}
+
+// ── Show/init results section ─────────────────────────────────────────────────
+function showResults(title, meta) {
+  const r = document.getElementById('results');
+  r.classList.add('visible');
+  document.getElementById('resultsTitle').textContent = title;
+  document.getElementById('resultsMeta').textContent = meta || '';
+}
+
+// ── Generate Full Night ───────────────────────────────────────────────────────
+async function generateFullNight() {
+  if (BUSY) return;
+  const inp = getInputs();
+
+  setBusy(true);
+  document.getElementById('roundsContainer').innerHTML = '';
+
+  const statusItems = [
+    { id: 'r1',       label: "Round 1 — Grain's House Round" },
+    { id: 'r2-main',  label: `Round 2 — Main Street: ${inp.r2Main || '(no theme)'}` },
+    { id: 'r2-exch',  label: `Round 2 — Exchange: ${inp.r2Exchange || '(no theme)'}` },
+    { id: 'r2-h2o',   label: `Round 2 — H2O: ${inp.r2H2O || '(no theme)'}` },
+    { id: 'r3',       label: `Round 3 — General Knowledge: ${inp.r3Sub}` },
+    { id: 'lightning',label: `Lightning Round${inp.lightningTopic ? ': ' + inp.lightningTopic : ' (mixed)'}` },
+    { id: 'lastcall', label: `Last Call — ${inp.lastCallCat || '(no category set)'}` },
+  ];
+  showStatus(statusItems);
+  showResults(
+    inp.week ? `Week ${inp.week} Questions` : 'Generated Questions',
+    'Generating 7 rounds in parallel…'
+  );
+
+  // Fire all 7 in parallel, resolving individually
+  async function gen(statusId, opts) {
+    try {
+      const data = await callApi(opts);
+      data._opts = opts;
+      setStatus(statusId, 'done');
+      return data;
+    } catch (err) {
+      setStatus(statusId, 'error');
+      return null;
+    }
+  }
+
+  const [r1, r2Main, r2Exch, r2H2O, r3, lightning, lastcall] = await Promise.all([
+    gen('r1',       { mode: 'round1' }),
+    gen('r2-main',  { mode: 'round2', location: 'Main Street', theme: inp.r2Main || 'General Knowledge' }),
+    gen('r2-exch',  { mode: 'round2', location: 'Exchange',    theme: inp.r2Exchange || 'General Knowledge' }),
+    gen('r2-h2o',   { mode: 'round2', location: 'H2O',         theme: inp.r2H2O || 'General Knowledge' }),
+    gen('r3',       { mode: 'round3', subcategory: inp.r3Sub }),
+    gen('lightning',{ mode: 'lightning', topic: inp.lightningTopic }),
+    gen('lastcall', { mode: 'lastcall', category: inp.lastCallCat || 'General Knowledge' }),
+  ]);
+
+  // Render in trivia-night order
+  const rounds = [
+    { data: r1,       id: 'card-r1',       label: "Round 1 — Grain's House Round",    opts: { mode: 'round1' } },
+    { data: r2Main,   id: 'card-r2-main',  label: 'Round 2 — Main Street',           opts: { mode: 'round2', location: 'Main Street', theme: inp.r2Main } },
+    { data: r2Exch,   id: 'card-r2-exch',  label: 'Round 2 — Exchange',              opts: { mode: 'round2', location: 'Exchange',    theme: inp.r2Exchange } },
+    { data: r2H2O,    id: 'card-r2-h2o',   label: 'Round 2 — H2O',                  opts: { mode: 'round2', location: 'H2O',         theme: inp.r2H2O } },
+    { data: r3,       id: 'card-r3',        label: `Round 3 — ${inp.r3Sub}`,          opts: { mode: 'round3', subcategory: inp.r3Sub } },
+    { data: lightning,id: 'card-lightning', label: 'Lightning Round',                opts: { mode: 'lightning', topic: inp.lightningTopic } },
+    { data: lastcall, id: 'card-lastcall',  label: 'Last Call',                      opts: { mode: 'lastcall', category: inp.lastCallCat } },
+  ];
+
+  const container = document.getElementById('roundsContainer');
+  for (const { data, id, label, opts } of rounds) {
+    const card = data ? makeCard(data, id) : makeErrorCard(id, label, opts);
+    container.appendChild(card);
+  }
+
+  const failed = rounds.filter(r => !r.data).length;
+  document.getElementById('resultsMeta').textContent = failed
+    ? `${7 - failed}/7 rounds generated — ${failed} failed, click Retry on those cards`
+    : '7/7 rounds generated successfully';
+
+  hideStatus();
+  setBusy(false);
+}
+
+// ── Generate Single Round ─────────────────────────────────────────────────────
+async function genSingle(mode, location) {
+  if (BUSY) return;
+  const inp = getInputs();
+
+  let opts, cardId, label;
+
+  switch (mode) {
+    case 'round1':
+      opts = { mode: 'round1' };
+      cardId = 'card-r1';
+      label = "Round 1 — Grain's House Round";
+      break;
+    case 'round2': {
+      const theme = location === 'Main Street' ? inp.r2Main
+                  : location === 'Exchange'    ? inp.r2Exchange
+                  :                              inp.r2H2O;
+      const slug = location.toLowerCase().replace(/\s+/g, '-');
+      opts = { mode: 'round2', location, theme: theme || 'General Knowledge' };
+      cardId = `card-r2-${slug}`;
+      label = `Round 2 — ${location}: ${theme || '(no theme set)'}`;
+      break;
+    }
+    case 'round3':
+      opts = { mode: 'round3', subcategory: inp.r3Sub };
+      cardId = 'card-r3';
+      label = `Round 3 — ${inp.r3Sub}`;
+      break;
+    case 'lightning':
+      opts = { mode: 'lightning', topic: inp.lightningTopic };
+      cardId = 'card-lightning';
+      label = `Lightning Round${inp.lightningTopic ? ': ' + inp.lightningTopic : ''}`;
+      break;
+    case 'lastcall':
+      opts = { mode: 'lastcall', category: inp.lastCallCat || 'General Knowledge' };
+      cardId = 'card-lastcall';
+      label = `Last Call — ${inp.lastCallCat || 'General Knowledge'}`;
+      break;
+  }
+
+  setBusy(true);
+  showStatus([{ id: 'single', label: `Generating ${label}…` }]);
+  showResults('Generated Questions');
+
+  try {
+    const data = await callApi(opts);
+    data._opts = opts;
+    const card = makeCard(data, cardId);
+    placeCard(card);
+    setStatus('single', 'done');
+  } catch (err) {
+    setStatus('single', 'error');
+    placeCard(makeErrorCard(cardId, label, opts));
+  }
+
+  setTimeout(hideStatus, 1800);
+  setBusy(false);
+}
+</script>
+</body>
+</html>
