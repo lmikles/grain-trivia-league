@@ -1,0 +1,11 @@
+{
+  "name": "grain-trivia-league",
+  "version": "1.0.0",
+  "description": "Grain Craft Bar + Kitchen Trivia League — Vercel + Google Sheets",
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "googleapis": "^140.0.0"
+  }
+}
