@@ -1,0 +1,11 @@
+{
+  "name": "grain-trivia-league",
+  "version": "1.0.0",
+  "description": "Grain Craft Bar + Kitchen Trivia League",
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "googleapis": "^171.0.0"
+  }
+}
