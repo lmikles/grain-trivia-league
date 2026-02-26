@@ -51,12 +51,13 @@ This round covers food, drink, craft beer, cocktails, and bar/restaurant culture
 
 REQUIREMENTS:
 • Mix topics across the round: beer styles & brewing process, cocktails & spirits, wine, food & flavor pairing, famous bars/breweries, bar/restaurant culture
-• Difficulty curve: Q1–3 should be accessible crowd-pleasers that most people at a bar would enjoy, Q4–7 moderate (some specific knowledge needed), Q8–10 genuinely challenging for craft beer enthusiasts
+• Difficulty curve: Q1–3 warm-up questions that most people at a bar night would get, Q4–7 require real knowledge (a regular craft beer drinker, not just anyone), Q8–10 should stump most people — specific, niche, insider knowledge about brewing, spirits, or food
+• AVOID the obvious: Do not write questions that appear in standard pub trivia packs or trivia apps. No "What country does Guinness come from?" or "What fruit is used in a margarita?" — go deeper
+• Think second and third layer: not just what a thing IS, but HOW it works, WHERE it originated, WHO invented it, WHAT the unusual rule is
 • Answers must be clear, specific, and unambiguous — no "it depends", no "various answers accepted"
-• Short answers are strongly preferred (a style name, a country, a number, a term) over long phrase answers
-• Write in a fun, conversational bar-trivia voice — not academic or textbook dry
+• Short answers strongly preferred (a style name, a country, a number, a term) over long phrases
+• Fun, conversational bar-trivia voice — not academic or textbook
 • Do NOT write multiple-choice options — this is open-answer bar trivia
-• Avoid questions where the correct answer is disputed, has changed recently, or is regionally variable
 
 Return ONLY a valid JSON array with no markdown fences, no explanation, nothing else:
 [{"question":"...","answer":"..."},...]`;
@@ -71,11 +72,12 @@ This is the location-specific round. Teams at ${location} were told the theme ("
 
 REQUIREMENTS:
 • ALL 10 questions must clearly and unambiguously fit the "${theme}" theme — no tangential or loose connections
-• Difficulty curve: Q1–4 accessible (even casual fans who glanced at the theme get these), Q5–8 moderate, Q9–10 genuinely challenging for the most prepared teams
-• Mix question styles: notable firsts, record-holders, names, years, connections, "what was the name of...", "which film/song/person..."
+• Difficulty curve: Q1–4 accessible (casual fans who glanced at the theme can get these), Q5–8 require real knowledge of the theme, Q9–10 should be genuinely hard — the deep cuts that only true fans or people who seriously prepared will know
+• AVOID the most famous facts: Do not write questions about the single most obvious thing in the theme. Everyone writing trivia on "${theme}" will reach for the same 5 questions — avoid all of them. Dig into the less obvious corners.
+• Mix question styles: notable firsts, surprising connections, "what was the original name of...", record-holders, obscure but verifiable details, behind-the-scenes facts
 • Answers must be verifiable, specific, and unambiguous — this is competitive trivia with real stakes
 • Short answers preferred (a name, a year, a title, a place)
-• Fun factor: good trivia teaches you something interesting when the answer is revealed — aim for "oh wow" moments
+• Fun factor: the answer should teach people something they didn't know — aim for "oh wow, I never would have guessed that" moments
 • Do NOT write multiple-choice options — this is open-answer bar trivia
 
 Return ONLY a valid JSON array with no markdown fences, no explanation, nothing else:
@@ -96,13 +98,16 @@ Generate exactly 10 trivia questions for ROUND 3: GENERAL KNOWLEDGE — ${subcat
 
 This round covers: ${guidance}. It runs the same at all three Grain locations each week.
 
+Round 3 has a specific personality: it is the WEIRD round. By this point in the night, teams need something surprising. These questions should be harder, stranger, and more memorable than anything in Rounds 1 or 2.
+
 REQUIREMENTS:
-• ALL 10 questions must clearly belong in the ${subcategory} category — no stretching
-• Difficulty curve: Q1–3 accessible (solid general knowledge gets these), Q4–7 moderate, Q8–10 challenging but fair
-• Mix question types: "What is...", "Who was the first to...", "In what country/year...", "Which..." — vary the structure
-• Answers must be unambiguous and verifiable — one correct answer, not open to interpretation
-• Avoid questions so obscure that no reasonable bar team anywhere would know them
-• Avoid questions where the answer has changed (e.g., current record holders) unless the change is itself famous
+• ALL 10 questions must belong in the ${subcategory} category — but find the strange, unexpected corners of it
+• Difficulty: harder across the board than the other rounds — Q1–4 are what would be Q7–9 in a normal round, Q5–10 are genuinely difficult. There are no warm-up questions here.
+• WEIRD means: counterintuitive answers, surprising facts that sound wrong but are right, obscure but verifiable truths, connections people would never guess, facts that make teams say "wait, WHAT?"
+• Actively seek out: facts that contradict common assumptions, animals/places/things that defy expectations, historical events most people have never heard of, science facts that seem impossible
+• Avoid any question that sounds like it belongs in a school quiz, a standard trivia deck, or Wikipedia's front page
+• The answer should feel SURPRISING even to people who know the category well
+• Answers must still be unambiguous and verifiable — weird does not mean vague
 • Short, specific answers preferred
 • Do NOT write multiple-choice options — this is open-answer bar trivia
 
@@ -132,6 +137,7 @@ REQUIREMENTS for each question:
 • Absolute zero ambiguity in the answer — this is rapid-fire with no discussion, so the answer must be unmistakable
 • Each question must be fully self-contained — no "building on the previous question" constructions
 • Avoid questions with multiple defensible answers (e.g., "name a..." or "give an example of...")
+• AVOID the obvious: Do not write questions with answers that are the first thing everyone thinks of ("What is the capital of France?"). Push into the less-visited facts — the second city, the lesser-known record, the surprising number, the unexpected connection. Teams should earn these points.
 
 Return ONLY a valid JSON array with no markdown fences, no explanation, nothing else:
 [{"question":"...","answer":"..."},...]`;
