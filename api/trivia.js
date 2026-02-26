@@ -141,6 +141,7 @@ REQUIREMENTS:
 • The answer should feel SURPRISING even to people who know the category well
 • Answers must still be unambiguous and verifiable — weird does not mean vague
 • Short, specific answers preferred
+• QUESTION LENGTH: Keep each question TEXT short and punchy — one sentence, 20 words or fewer. Do not use long setups or multi-clause constructions. Bad example: "Although most countries have rivers, there is one nation that uniquely has none at all — what is it?" Good example: "What is the only country in the world with no rivers?" Same weirdness, half the words.
 • Do NOT write multiple-choice options — this is open-answer bar trivia${avoidBlock(weekNumber, avoidList)}
 
 Return ONLY a valid JSON array with no markdown fences, no explanation, nothing else:

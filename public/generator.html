@@ -290,7 +290,7 @@
         <h2 id="resultsTitle">Generated Questions</h2>
         <div class="results-meta" id="resultsMeta"></div>
       </div>
-      <button class="btn-sm" onclick="window.print()">🖨️ Print All</button>
+      <button class="btn-sm" onclick="printAll()">🖨️ Print All</button>
     </div>
     <div id="roundsContainer"></div>
   </div>
@@ -301,7 +301,8 @@
 let SECRET = '';
 let BUSY = false;
 let LOCATION = '';
-const CARD_OPTS = {};
+const CARD_OPTS = {};  // cardId → API body (for regeneration)
+const CARD_DATA = {};  // cardId → full round data (for saving to sheet)
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 document.getElementById('secretInput').addEventListener('keydown', e => {
@@ -406,6 +407,7 @@ function questionsHtml(questions) {
 
 function makeCard(data, cardId) {
   CARD_OPTS[cardId] = data._opts;
+  CARD_DATA[cardId] = data;  // store for sheet save
   const pts = data.pointsEach === 'wagered' ? 'wagered' : `${data.pointsEach}pt each`;
   const sub = `${esc(data.category)} · ${data.questionCount} Q${data.questionCount !== 1 ? 's' : ''} · ${pts}`;
   const lcNote = data.round === 'lastcall'
@@ -461,8 +463,27 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ── Print single card ─────────────────────────────────────────────────────────
-function printCard(cardId) {
+// ── Save questions to Google Sheet ────────────────────────────────────────────
+async function saveQuestions(rounds) {
+  if (!rounds || rounds.length === 0) return;
+  const inp = getInputs();
+  try {
+    await fetch('/api/questions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SECRET}` },
+      body: JSON.stringify({ week: inp.week, location: LOCATION, rounds }),
+    });
+  } catch (e) {
+    console.warn('[generator] save failed (non-blocking):', e.message);
+  }
+}
+
+// ── Print single card (saves to sheet first) ──────────────────────────────────
+async function printCard(cardId) {
+  // Save this round to sheet in background (don't block print on failure)
+  const data = CARD_DATA[cardId];
+  if (data) saveQuestions([data]);
+
   const el = document.getElementById(cardId);
   if (!el) return;
   const win = window.open('', '_blank', 'width=700,height=700');
@@ -482,6 +503,20 @@ function printCard(cardId) {
   </style></head><body>${el.innerHTML}</body></html>`);
   win.document.close();
   win.onload = () => { win.focus(); win.print(); };
+}
+
+// ── Print all (saves everything to sheet first) ───────────────────────────────
+async function printAll() {
+  const rounds = Object.values(CARD_DATA).filter(Boolean);
+  if (rounds.length > 0) {
+    // Show brief saving indicator
+    const btn = document.querySelector('[onclick="printAll()"]');
+    const orig = btn?.textContent;
+    if (btn) btn.textContent = 'Saving…';
+    await saveQuestions(rounds);
+    if (btn) btn.textContent = orig;
+  }
+  window.print();
 }
 
 // ── Regenerate ────────────────────────────────────────────────────────────────
