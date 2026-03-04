@@ -23,6 +23,7 @@
  */
 
 const { readRange, appendRows, updateRange, createSheetTab } = require('../lib/sheets');
+const { isValidHostSecret } = require('../lib/auth');
 
 const HEADERS = [
   'LogID', 'Week', 'SavedAt', 'Location', 'Round', 'RoundTitle', 'Category', 'Q#', 'Question', 'Answer',
@@ -53,8 +54,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const auth = (req.headers['authorization'] || '').trim();
-  if (!process.env.HOST_SECRET || auth !== `Bearer ${process.env.HOST_SECRET}`) {
+  if (!isValidHostSecret(req.headers['authorization'])) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 

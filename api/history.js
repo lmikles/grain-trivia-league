@@ -17,6 +17,7 @@
  */
 
 const { readRange } = require('../lib/sheets');
+const { isValidHostSecret } = require('../lib/auth');
 
 // QuestionLog column indices (0-based)
 // LogID(0) Week(1) SavedAt(2) Location(3) Round(4) RoundTitle(5) Category(6) Q#(7) Question(8) Answer(9)
@@ -33,8 +34,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const auth = (req.headers['authorization'] || '').trim();
-  if (!process.env.HOST_SECRET || auth !== `Bearer ${process.env.HOST_SECRET}`) {
+  if (!isValidHostSecret(req.headers['authorization'])) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 

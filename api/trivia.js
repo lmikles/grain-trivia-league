@@ -37,8 +37,10 @@
  *   weekNumber  number   — Week number in season; used to encourage fresh questions
  *   avoidList   string[] — Questions from previous weeks to avoid repeating
  *
- * Required env vars: ANTHROPIC_API_KEY, HOST_SECRET
+ * Required env vars: ANTHROPIC_API_KEY, HOST_SECRET (+ per-store secrets)
  */
+
+const { isValidHostSecret } = require('../lib/auth');
 
 function setCors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -295,9 +297,8 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const auth = (req.headers['authorization'] || '').trim();
-  if (!process.env.HOST_SECRET || auth !== `Bearer ${process.env.HOST_SECRET}`) {
-    return res.status(401).json({ error: 'Unauthorized — valid HOST_SECRET required' });
+  if (!isValidHostSecret(req.headers['authorization'])) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
   const body = req.body || {};
