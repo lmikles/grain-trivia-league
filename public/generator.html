@@ -73,6 +73,32 @@
     .card-header h2 { font-size: 0.9rem; font-weight: 700; color: var(--blue); }
     .setup-body { padding: 1.25rem; }
 
+    /* ── MODE TOGGLE ───────────────────────────────────────────────────────── */
+    .mode-toggle {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1.25rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 0.55rem 0.75rem;
+      background: var(--surf2);
+      border: none;
+      color: var(--dim);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
+      border-right: 1px solid var(--border);
+    }
+    .mode-btn:last-child { border-right: none; }
+    .mode-btn.active { background: var(--blue); color: #fff; }
+    .mode-btn:hover:not(.active) { background: var(--surface); color: var(--text); }
+
     /* ── LOCATION SELECTOR ─────────────────────────────────────────────────── */
     .loc-label { font-size: 0.75rem; color: var(--dim); margin-bottom: 0.5rem; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
     .loc-pills { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
@@ -223,6 +249,21 @@
     <div class="card-header"><h2>Week Setup</h2></div>
     <div class="setup-body">
 
+      <!-- Night mode toggle -->
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="modeStandard" onclick="setNightMode('standard')">Standard Night</button>
+        <button class="mode-btn" id="modeTheme" onclick="setNightMode('theme')">🎯 Theme Night</button>
+      </div>
+
+      <!-- Theme input (theme night only) -->
+      <div id="themeWrap" style="display:none" class="form-grid">
+        <div class="field full">
+          <label>Tonight's Theme <span style="color:var(--red);font-weight:700">*</span></label>
+          <input type="text" id="themeInput" placeholder="e.g. The Beatles, Space Exploration, 1990s Movies…" />
+          <span class="hint">All 5 rounds will explore this theme from different angles</span>
+        </div>
+      </div>
+
       <!-- Location selector (hidden for store hosts, auto-set) -->
       <div id="locPickerWrap">
         <span class="loc-label">Location for this trivia night</span>
@@ -239,7 +280,8 @@
           <label>Week Number</label>
           <input type="number" id="weekNum" min="1" placeholder="e.g. 12" />
         </div>
-        <div class="field">
+        <!-- Standard-only fields -->
+        <div class="field" id="fieldR3Sub">
           <label>Round 3 Subcategory</label>
           <select id="r3Sub">
             <option value="Geography">Geography</option>
@@ -248,16 +290,16 @@
             <option value="Current Events">Current Events</option>
           </select>
         </div>
-        <div class="field">
+        <div class="field" id="fieldR2Theme">
           <label id="r2ThemeLabel">Round 2 Theme — <em>select a location first</em></label>
           <input type="text" id="r2Theme" placeholder="e.g. 80s Music, Delaware History…" />
         </div>
         <div class="field">
-          <label>Last Call Category</label>
+          <label>Last Call Category <span id="lastCallHint" style="color:var(--dim);font-weight:400">(announced before wager)</span></label>
           <input type="text" id="lastCallCat" placeholder="e.g. World Capitals, Oscar Winners" />
-          <span class="hint">Announced to teams before they wager</span>
+          <span class="hint" id="lastCallSubhint">Announced to teams before they wager</span>
         </div>
-        <div class="field full">
+        <div class="field" id="fieldLightningTopic">
           <label>Lightning Round Topic <span style="color:var(--dim);font-weight:400">(optional — leave blank for mixed)</span></label>
           <input type="text" id="lightningTopic" placeholder="e.g. 90s Movies" />
         </div>
@@ -313,6 +355,7 @@ let SECRET = '';
 let ROLE = '';         // 'admin' | 'host'
 let BUSY = false;
 let LOCATION = '';
+let NIGHT_MODE = 'standard';  // 'standard' | 'theme'
 let HISTORY_LOADED_WEEK = null;
 const CARD_OPTS = {};
 const CARD_DATA = {};
@@ -382,6 +425,30 @@ function resetToAuth() {
   btn.textContent = 'Unlock Generator';
 }
 
+// ── Night mode toggle ─────────────────────────────────────────────────────────
+function setNightMode(mode) {
+  NIGHT_MODE = mode;
+  const isTheme = mode === 'theme';
+
+  document.getElementById('modeStandard').classList.toggle('active', !isTheme);
+  document.getElementById('modeTheme').classList.toggle('active', isTheme);
+
+  // Show/hide theme input
+  document.getElementById('themeWrap').style.display = isTheme ? '' : 'none';
+
+  // Show/hide standard-only fields
+  document.getElementById('fieldR3Sub').style.display        = isTheme ? 'none' : '';
+  document.getElementById('fieldR2Theme').style.display      = isTheme ? 'none' : '';
+  document.getElementById('fieldLightningTopic').style.display = isTheme ? 'none' : '';
+
+  // Update Last Call label hint
+  document.getElementById('lastCallSubhint').textContent = isTheme
+    ? 'Leave blank to use the main theme as the category'
+    : 'Announced to teams before they wager';
+
+  updateGenerateButton();
+}
+
 // ── Location selector ─────────────────────────────────────────────────────────
 function selectLocation(btn) {
   document.querySelectorAll('.loc-pill').forEach(p => p.classList.remove('active'));
@@ -392,9 +459,22 @@ function selectLocation(btn) {
 
 function updateLocationUI() {
   document.getElementById('r2ThemeLabel').innerHTML = `Round 2 Theme — <strong>${LOCATION}</strong>`;
+  updateGenerateButton();
+}
+
+function updateGenerateButton() {
   const genBtn = document.getElementById('btnFullNight');
+  if (!LOCATION) {
+    genBtn.disabled = true;
+    genBtn.textContent = 'Select a location to generate questions';
+    return;
+  }
   genBtn.disabled = false;
-  genBtn.textContent = `⚡ Generate Full Night for ${LOCATION}`;
+  if (NIGHT_MODE === 'theme') {
+    genBtn.textContent = `🎯 Generate Theme Night for ${LOCATION}`;
+  } else {
+    genBtn.textContent = `⚡ Generate Full Night for ${LOCATION}`;
+  }
 }
 
 // ── Auto-load history on week change ──────────────────────────────────────────
@@ -443,6 +523,7 @@ function getInputs() {
   return {
     location:       LOCATION,
     week:           parseInt(document.getElementById('weekNum').value) || null,
+    theme:          document.getElementById('themeInput').value.trim(),
     r2Theme:        document.getElementById('r2Theme').value.trim(),
     r3Sub:          document.getElementById('r3Sub').value,
     lastCallCat:    document.getElementById('lastCallCat').value.trim(),
@@ -644,6 +725,13 @@ async function generateFullNight() {
   if (BUSY || !LOCATION) return;
   const inp = getInputs();
 
+  if (NIGHT_MODE === 'theme') {
+    return generateThemeNight(inp);
+  }
+  return generateStandardNight(inp);
+}
+
+async function generateStandardNight(inp) {
   setBusy(true);
   document.getElementById('roundsContainer').innerHTML = '';
 
@@ -686,11 +774,11 @@ async function generateFullNight() {
   ]);
 
   const rounds = [
-    { data: r1,        id: 'card-r1',       label: "Round 1 — Grain's House Round", opts: opts.r1 },
-    { data: r2,        id: 'card-r2',       label: `Round 2 — ${LOCATION}`,          opts: opts.r2 },
-    { data: r3,        id: 'card-r3',       label: `Round 3 — ${inp.r3Sub}`,          opts: opts.r3 },
-    { data: lightning, id: 'card-lightning',label: 'Lightning Round',                 opts: opts.lightning },
-    { data: lastcall,  id: 'card-lastcall', label: 'Last Call',                       opts: opts.lastcall },
+    { data: r1,        id: 'card-r1',        label: "Round 1 — Grain's House Round", opts: opts.r1 },
+    { data: r2,        id: 'card-r2',        label: `Round 2 — ${LOCATION}`,          opts: opts.r2 },
+    { data: r3,        id: 'card-r3',        label: `Round 3 — ${inp.r3Sub}`,          opts: opts.r3 },
+    { data: lightning, id: 'card-lightning', label: 'Lightning Round',                 opts: opts.lightning },
+    { data: lastcall,  id: 'card-lastcall',  label: 'Last Call',                       opts: opts.lastcall },
   ];
 
   for (const { data, id, label, opts: o } of rounds) {
@@ -703,6 +791,88 @@ async function generateFullNight() {
   document.getElementById('resultsMeta').textContent = failed
     ? `${5 - failed}/5 rounds generated — ${failed} failed, click Retry`
     : '5/5 rounds generated ✓';
+
+  hideStatus();
+  setBusy(false);
+}
+
+async function generateThemeNight(inp) {
+  const theme = document.getElementById('themeInput').value.trim();
+  if (!theme) {
+    alert('Enter a theme before generating a Theme Night.');
+    return;
+  }
+
+  setBusy(true);
+  document.getElementById('roundsContainer').innerHTML = '';
+
+  showStatus([
+    { id: 'r1',        label: `Round 1 — ${theme}: Food & Drink Angle` },
+    { id: 'r2',        label: `Round 2 — ${theme}: Core Theme` },
+    { id: 'r3',        label: `Round 3 — ${theme}: The Weird Side` },
+    { id: 'lightning', label: `Lightning — ${theme}` },
+    { id: 'lastcall',  label: `Last Call — ${inp.lastCallCat || theme}` },
+  ]);
+  showResults(`Week ${inp.week || '—'} · ${LOCATION} · 🎯 ${theme}`, 'Generating 5 themed rounds…');
+
+  // Theme-night fires one batch API call returning all 5 rounds
+  const apiOpts = {
+    mode: 'theme-night',
+    theme,
+    location: LOCATION,
+    lastCallCategory: inp.lastCallCat || '',
+    weekNumber: inp.week,
+    avoidList: inp.avoidList,
+  };
+
+  let result;
+  try {
+    result = await callApi(apiOpts);
+  } catch (err) {
+    // All failed
+    setStatus('r1', 'error'); setStatus('r2', 'error'); setStatus('r3', 'error');
+    setStatus('lightning', 'error'); setStatus('lastcall', 'error');
+    document.getElementById('resultsMeta').textContent = 'Generation failed — check your connection and retry';
+    hideStatus();
+    setBusy(false);
+    return;
+  }
+
+  const roundsMap = result.rounds || {};
+  const roundDefs = [
+    { key: 'round1',    id: 'card-r1',        statusId: 'r1',        label: `Round 1 — ${theme}: Food & Drink` },
+    { key: 'round2',    id: 'card-r2',        statusId: 'r2',        label: `Round 2 — ${theme}` },
+    { key: 'round3',    id: 'card-r3',        statusId: 'r3',        label: `Round 3 — ${theme}: Weird Side` },
+    { key: 'lightning', id: 'card-lightning', statusId: 'lightning', label: `Lightning — ${theme}` },
+    { key: 'lastcall',  id: 'card-lastcall',  statusId: 'lastcall',  label: 'Last Call' },
+  ];
+
+  // Build re-gen opts for each round (single-round retry)
+  const regenOpts = {
+    round1:    { mode: 'round1',    weekNumber: inp.week, avoidList: inp.avoidList },
+    round2:    { mode: 'round2',    location: LOCATION, theme, weekNumber: inp.week, avoidList: inp.avoidList },
+    round3:    { mode: 'round3',    subcategory: 'General Knowledge', weekNumber: inp.week, avoidList: inp.avoidList },
+    lightning: { mode: 'lightning', topic: theme, weekNumber: inp.week, avoidList: inp.avoidList },
+    lastcall:  { mode: 'lastcall',  category: inp.lastCallCat || theme, weekNumber: inp.week, avoidList: inp.avoidList },
+  };
+
+  let failed = 0;
+  for (const { key, id, statusId, label } of roundDefs) {
+    const data = roundsMap[key];
+    if (data && !data.error && data.questions) {
+      data._opts = regenOpts[key];
+      setStatus(statusId, 'done');
+      document.getElementById('roundsContainer').appendChild(makeCard(data, id));
+    } else {
+      setStatus(statusId, 'error');
+      document.getElementById('roundsContainer').appendChild(makeErrorCard(id, label, regenOpts[key]));
+      failed++;
+    }
+  }
+
+  document.getElementById('resultsMeta').textContent = failed
+    ? `${5 - failed}/5 rounds generated — ${failed} failed, click Retry`
+    : `5/5 themed rounds generated ✓ — Theme: ${theme}`;
 
   hideStatus();
   setBusy(false);

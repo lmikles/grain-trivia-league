@@ -33,6 +33,10 @@
  *                         lastCallCategory: string, lightningTopic?: string }
  *              Fires 5 parallel API calls (round1, round2, round3, lightning, lastcall)
  *
+ * 'theme-night'  All-theme night — every round explores the same theme from a different angle
+ *              options: { theme: string, location: string, lastCallCategory?: string }
+ *              Fires 5 parallel API calls with theme-specific prompts
+ *
  * Shared params (all modes):
  *   weekNumber  number   — Week number in season; used to encourage fresh questions
  *   avoidList   string[] — Questions from previous weeks to avoid repeating
@@ -205,6 +209,118 @@ Return ONLY a single valid JSON object with no markdown fences, no explanation, 
 {"question":"...","answer":"..."}`;
 }
 
+// ─── Theme Night prompt builders ─────────────────────────────────────────────
+// Five different lenses on the same theme, used when the host runs an all-theme night.
+
+function promptThemeRound1(theme, weekNumber, avoidList) {
+  return `You are writing trivia questions for a special ALL-THEME trivia night at Grain Craft Bar + Kitchen, Delaware. Tonight's theme is: "${theme}".
+
+Generate exactly 10 trivia questions for ROUND 1: THE FOOD & DRINK ANGLE on "${theme}".
+
+This is the House Round, normally about craft beer, food, and drink. Tonight it stays in that world BUT filters everything through the "${theme}" lens.
+
+WHAT THIS MEANS IN PRACTICE:
+• Find the real intersections between "${theme}" and the world of food, drink, beer, cocktails, and bar culture
+• Examples of the kind of angle to find: What did they eat/drink? What drinks share their name? What bars/restaurants are connected to them? What food or drink is famous in the places/era they're from? Were they known for a specific drink? Did they inspire cocktails or beers? Are there restaurants or bars named after them?
+• These must be REAL facts — verifiable, specific, unambiguous
+• Q1–3: accessible warm-up (a regular bar-goer who knows the theme can get these), Q4–7: require both theme knowledge AND food/drink knowledge, Q8–10: niche, insider territory that combines deep theme knowledge with food/drink trivia
+• Short punchy questions (20 words or fewer ideally)
+• No multiple-choice — open-answer bar trivia${avoidBlock(weekNumber, avoidList)}
+
+Return ONLY a valid JSON array with no markdown fences, no explanation, nothing else:
+[{"question":"...","answer":"..."},...]`;
+}
+
+function promptThemeRound2(theme, location, weekNumber, avoidList) {
+  return `You are writing trivia questions for a special ALL-THEME trivia night at Grain Craft Bar + Kitchen, ${location}, Delaware. Tonight's theme is: "${theme}".
+
+Generate exactly 10 trivia questions for ROUND 2: THE CORE THEME ROUND — "${theme}".
+
+Teams were told the theme in advance on social media. This is the straight-ahead deep dive into the theme itself.
+
+REQUIREMENTS:
+• ALL 10 questions must be directly about "${theme}" — no loose connections
+• Difficulty curve: Q1–4 accessible (casual fans who studied the theme can get these), Q5–8 require real knowledge, Q9–10 deep cuts that only people who seriously know "${theme}" will get
+• AVOID the single most famous facts about "${theme}" — every trivia writer reaches for the same obvious questions. Skip the top 5 most Googleable facts and find the second and third layer
+• Mix question styles: surprising firsts, record-holders, origin stories, behind-the-scenes facts, unexpected connections, things that sound wrong but are right
+• Answers: verifiable, specific, unambiguous, short (a name, a year, a title, a place)
+• No multiple-choice — open-answer bar trivia${avoidBlock(weekNumber, avoidList)}
+
+Return ONLY a valid JSON array with no markdown fences, no explanation, nothing else:
+[{"question":"...","answer":"..."},...]`;
+}
+
+function promptThemeRound3(theme, weekNumber, avoidList) {
+  return `You are writing trivia questions for a special ALL-THEME trivia night at Grain Craft Bar + Kitchen, Delaware. Tonight's theme is: "${theme}".
+
+Generate exactly 10 trivia questions for ROUND 3: THE WEIRD SIDE of "${theme}".
+
+This round has a specific personality: it is the WEIRD round. By this point in the night teams need something surprising. These questions take the theme into its strangest, most counterintuitive, most "wait — WHAT?!" corners.
+
+REQUIREMENTS:
+• ALL questions must be genuinely about "${theme}" — no loose connections
+• Difficulty: harder across the board — no warm-up questions. Start hard, get harder.
+• WEIRD means: facts about "${theme}" that sound wrong but are right, the most counterintuitive truths, things even big fans have never heard, unexpected connections, things that happened that defy expectations, the obscure underbelly of the subject
+• Actively seek: misconceptions people have about "${theme}", facts that contradict what most people think they know, strange historical details, surprising records or statistics, the dark/weird/funny/unexpected side of the subject
+• The answer should feel SURPRISING even to people who know "${theme}" well
+• Questions MUST be short and punchy — one sentence, 20 words or fewer. No long setups.
+• Answers: unambiguous, verifiable, specific
+• No multiple-choice — open-answer bar trivia${avoidBlock(weekNumber, avoidList)}
+
+Return ONLY a valid JSON array with no markdown fences, no explanation, nothing else:
+[{"question":"...","answer":"..."},...]`;
+}
+
+function promptThemeLightning(theme, weekNumber, avoidList) {
+  return `You are writing questions for a LIGHTNING ROUND at a special ALL-THEME trivia night at Grain Craft Bar + Kitchen, Delaware. Tonight's theme is: "${theme}".
+
+Generate exactly 8 questions for the LIGHTNING ROUND — all about "${theme}".
+
+Lightning Round rules:
+• Teams hear all 8 questions read quickly, then submit ALL answers at once
+• Worth 2 points each — no partial credit
+• Read fast — the pace is part of the fun
+
+REQUIREMENTS:
+• ALL 8 questions must clearly be about "${theme}"
+• Answers MUST be SHORT — 1–3 words (a name, a number, a year, a word)
+• Questions must be punchy and fast to read aloud — no long setup, no multi-part questions
+• Zero ambiguity in the answer — teams submit all at once with no chance to clarify
+• AVOID the most obvious facts about "${theme}" — go for the second and third tier, the surprising specifics
+• Each question must be fully self-contained${avoidBlock(weekNumber, avoidList)}
+
+Return ONLY a valid JSON array with no markdown fences, no explanation, nothing else:
+[{"question":"...","answer":"..."},...]`;
+}
+
+function promptThemeLastCall(theme, lastCallCategory, weekNumber, avoidList) {
+  const categoryNote = lastCallCategory && lastCallCategory !== theme
+    ? `\n\nThe announced category is: "${lastCallCategory}" (a specific angle within the "${theme}" theme).`
+    : `\n\nThe announced category is: "${theme}".`;
+
+  return `You are writing the final question for a special ALL-THEME trivia night at Grain Craft Bar + Kitchen, Delaware. Tonight's theme is: "${theme}".
+
+Generate exactly 1 LAST CALL question — the dramatic finale of the night.${categoryNote}
+
+Last Call rules:
+• Before hearing the question, teams wager 1 point up to their full current score
+• Teams with zero points wager zero but still participate
+• After wagering is locked, the host reads the question
+• Correct = add wager to score; Incorrect = lose wager
+• A team down by 10 points CAN win the night. A team in first has a real decision to make.
+• Hosts build drama: "This is the moment everything changes."
+
+REQUIREMENTS:
+• The question must clearly fit within the announced category — teams wagered based on this
+• Make it feel worthy of a finale — the most memorable, significant, or dramatic question of the night
+• Genuinely challenging but fair — a team who knows "${theme}" well should feel they had a real shot
+• The answer must be completely unambiguous — no ties, no regional variation, no "either X or Y"
+• Not so obscure that even devoted fans would have zero chance${avoidBlock(weekNumber, avoidList)}
+
+Return ONLY a single valid JSON object with no markdown fences, no explanation, nothing else:
+{"question":"...","answer":"..."}`;
+}
+
 // ─── Anthropic API call ───────────────────────────────────────────────────────
 
 async function callClaude(prompt) {
@@ -312,7 +428,7 @@ module.exports = async function handler(req, res) {
     avoid = avoidList.split('\n').map(s => s.trim()).filter(Boolean);
   }
 
-  const VALID_MODES = ['round1', 'round2', 'round3', 'lightning', 'lastcall', 'location-night'];
+  const VALID_MODES = ['round1', 'round2', 'round3', 'lightning', 'lastcall', 'location-night', 'theme-night'];
   if (!VALID_MODES.includes(mode)) {
     return res.status(400).json({
       error: `Invalid mode. Must be one of: ${VALID_MODES.join(', ')}`,
@@ -359,6 +475,87 @@ module.exports = async function handler(req, res) {
           maxBaseScore: 46,
           lastCall: 'Wager 1–full score',
         },
+        rounds: {
+          round1:    round1.ok    ? round1.data    : { error: round1.error },
+          round2:    round2.ok    ? round2.data    : { error: round2.error },
+          round3:    round3.ok    ? round3.data    : { error: round3.error },
+          lightning: lightning.ok ? lightning.data : { error: lightning.error },
+          lastcall:  lastcall.ok  ? lastcall.data  : { error: lastcall.error },
+        },
+        failed,
+      });
+    }
+
+    // ── Theme night: all 5 rounds share one theme ─────────────────────────────
+    if (mode === 'theme-night') {
+      const { theme, location, lastCallCategory } = body;
+      if (!theme) return res.status(400).json({ error: 'theme is required for theme-night mode' });
+      if (!location) return res.status(400).json({ error: 'location is required for theme-night mode' });
+
+      const lcCategory = lastCallCategory || theme;
+
+      const gen = (label, promptFn) => promptFn()
+        .then(async prompt => {
+          let raw = await callClaude(prompt);
+          if (!Array.isArray(raw)) raw = [raw];
+          const questions = raw.map((q, i) => ({
+            number: i + 1,
+            question: String(q.question).trim(),
+            answer: String(q.answer).trim(),
+          }));
+          return { ok: true, data: { round: label, ...questions } };
+        })
+        .catch(err => ({ ok: false, error: err.message, round: label }));
+
+      // Build individual results with full metadata
+      const makeResult = async (roundKey, title, category, pointsEach, prompt, loc) => {
+        try {
+          let raw = await callClaude(prompt);
+          if (!Array.isArray(raw)) raw = [raw];
+          const questions = raw.map((q, i) => ({
+            number: i + 1,
+            question: String(q.question).trim(),
+            answer: String(q.answer).trim(),
+          }));
+          return {
+            ok: true,
+            data: {
+              round: roundKey,
+              title,
+              category,
+              pointsEach,
+              questionCount: questions.length,
+              questions,
+              themeNight: true,
+              theme,
+              ...(loc ? { location: loc } : {}),
+              ...(roundKey === 'lastcall' ? {
+                lastCallNotes: 'Announce category only first. Teams wager before hearing the question.',
+              } : {}),
+              generatedAt: new Date().toISOString(),
+            },
+          };
+        } catch (err) {
+          return { ok: false, error: err.message, round: roundKey };
+        }
+      };
+
+      const [round1, round2, round3, lightning, lastcall] = await Promise.all([
+        makeResult('round1',    `Grain's House Round: ${theme}`, `${theme} — Food & Drink Angle`, 1,          promptThemeRound1(theme, weekNumber, avoid)),
+        makeResult('round2',    `Theme Round: ${theme}`,          theme,                           1,          promptThemeRound2(theme, location, weekNumber, avoid), location),
+        makeResult('round3',    `The Weird Side: ${theme}`,       `${theme} — Strange Facts`,      1,          promptThemeRound3(theme, weekNumber, avoid)),
+        makeResult('lightning', `Lightning Round: ${theme}`,      theme,                           2,          promptThemeLightning(theme, weekNumber, avoid)),
+        makeResult('lastcall',  'Last Call',                       lcCategory,                      'wagered',  promptThemeLastCall(theme, lcCategory, weekNumber, avoid)),
+      ]);
+
+      const failed = [round1, round2, round3, lightning, lastcall].filter(r => !r.ok).length;
+
+      return res.status(200).json({
+        mode: 'theme-night',
+        theme,
+        location,
+        week: weekNumber || null,
+        generatedAt: new Date().toISOString(),
         rounds: {
           round1:    round1.ok    ? round1.data    : { error: round1.error },
           round2:    round2.ok    ? round2.data    : { error: round2.error },
