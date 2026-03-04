@@ -8,16 +8,17 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0f0f0f;
-      --surface: #1c1c1c;
-      --surface2: #252525;
-      --border: #333;
-      --amber: #f59e0b;
-      --amber-light: #fcd34d;
-      --text: #f0f0f0;
-      --text-dim: #888;
-      --green: #22c55e;
-      --red: #ef4444;
+      --bg:      #f2e1cf;
+      --surface: #ffffff;
+      --surf2:   #f9f0e6;
+      --border:  #d4bfa3;
+      --blue:    #3671b7;
+      --blue-dk: #2a5a99;
+      --green:   #9ab59e;
+      --text:    #1a1209;
+      --dim:     #7a6a56;
+      --red:     #c0392b;
+      --radius:  10px;
     }
 
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -27,149 +28,158 @@
       max-width: 380px; margin: 8rem auto; padding: 2rem;
       background: var(--surface); border: 1px solid var(--border); border-radius: 16px; text-align: center;
     }
-    #authGate .eyebrow { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
-    #authGate h1 { font-size: 1.6rem; margin-bottom: 0.35rem; }
-    #authGate h1 span { color: var(--amber); }
-    #authGate p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    #authGate .eyebrow { font-size: 0.75rem; color: var(--dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    #authGate h1 { font-size: 1.6rem; margin-bottom: 0.35rem; color: var(--text); }
+    #authGate h1 span { color: var(--blue); }
+    #authGate p { color: var(--dim); font-size: 0.9rem; margin-bottom: 1.5rem; }
     #authGate input {
       width: 100%; padding: 0.75rem 1rem;
-      background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+      background: var(--surf2); border: 1px solid var(--border); border-radius: 8px;
       color: var(--text); font-size: 1rem; margin-bottom: 0.75rem;
     }
-    #authGate input:focus { outline: 2px solid var(--amber); }
+    #authGate input:focus { outline: 2px solid var(--blue); outline-offset: -1px; }
     #authGate button {
-      width: 100%; padding: 0.8rem; background: var(--amber); color: #000;
+      width: 100%; padding: 0.8rem; background: var(--blue); color: #fff;
       border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer;
     }
-    #authGate button:hover { background: var(--amber-light); }
+    #authGate button:hover { background: var(--blue-dk); }
     .auth-error { color: var(--red); margin-top: 0.6rem; font-size: 0.85rem; }
 
     /* ── MAIN LAYOUT ───────────────────────────────────────────────────────── */
     #mainTool { display: none; max-width: 860px; margin: 0 auto; padding: 1.25rem; }
 
-    header { padding: 1.25rem 0; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-    header .eyebrow { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
-    header h1 { font-size: 1.4rem; margin: 0.2rem 0 0.5rem; }
-    header h1 span { color: var(--amber); }
-    header nav a { color: var(--text-dim); text-decoration: none; font-size: 0.85rem; margin-right: 1.25rem; }
-    header nav a:hover { color: var(--amber); }
+    header {
+      background: var(--blue); color: #fff;
+      padding: 1rem 1.25rem; border-radius: var(--radius);
+      display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    header .brand { font-size: 0.75rem; opacity: 0.8; }
+    header h1 { font-size: 1.3rem; font-weight: 700; }
+    header .loc-badge {
+      background: rgba(255,255,255,0.2); border-radius: 12px;
+      padding: 0.2rem 0.7rem; font-size: 0.8rem; font-weight: 600;
+    }
+    header nav { margin-left: auto; display: flex; gap: 1rem; }
+    header nav a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.85rem; }
+    header nav a:hover { color: #fff; }
 
-    /* ── SETUP CARD ────────────────────────────────────────────────────────── */
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1.25rem; overflow: hidden; }
+    /* ── CARDS ─────────────────────────────────────────────────────────────── */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 1.25rem; overflow: hidden; }
     .card-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0.9rem 1.25rem; background: var(--surface2); border-bottom: 1px solid var(--border);
+      padding: 0.8rem 1.25rem; background: var(--surf2); border-bottom: 1px solid var(--border);
     }
-    .card-header h2 { font-size: 0.95rem; font-weight: 600; }
-
+    .card-header h2 { font-size: 0.9rem; font-weight: 700; color: var(--blue); }
     .setup-body { padding: 1.25rem; }
 
     /* ── LOCATION SELECTOR ─────────────────────────────────────────────────── */
-    .loc-label { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.5rem; display: block; }
+    .loc-label { font-size: 0.75rem; color: var(--dim); margin-bottom: 0.5rem; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
     .loc-pills { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
     .loc-pill {
-      padding: 0.5rem 1.1rem;
-      background: var(--surface2); border: 1px solid var(--border); border-radius: 100px;
-      color: var(--text-dim); font-size: 0.88rem; cursor: pointer;
+      padding: 0.45rem 1.1rem;
+      background: var(--surf2); border: 2px solid var(--border); border-radius: 100px;
+      color: var(--dim); font-size: 0.88rem; cursor: pointer;
       transition: all 0.12s;
     }
-    .loc-pill:hover { border-color: var(--amber); color: var(--text); }
-    .loc-pill.active { background: var(--amber); border-color: var(--amber); color: #000; font-weight: 600; }
+    .loc-pill:hover { border-color: var(--blue); color: var(--text); }
+    .loc-pill.active { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
 
     /* ── FORM ──────────────────────────────────────────────────────────────── */
     .section-divider {
-      font-size: 0.72rem; color: var(--amber); text-transform: uppercase; letter-spacing: 0.08em;
+      font-size: 0.72rem; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;
       padding: 0.6rem 0 0.4rem; margin-top: 0.25rem;
       border-bottom: 1px solid var(--border); margin-bottom: 0.75rem;
     }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1.25rem; margin-bottom: 0.75rem; }
     .field { display: flex; flex-direction: column; gap: 0.3rem; }
-    .field label { font-size: 0.75rem; color: var(--text-dim); }
+    .field label { font-size: 0.75rem; color: var(--dim); font-weight: 600; }
     .field input, .field select, .field textarea {
       padding: 0.55rem 0.75rem;
-      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surf2); border: 1px solid var(--border); border-radius: 6px;
       color: var(--text); font-size: 0.9rem;
     }
     .field textarea { resize: vertical; min-height: 80px; font-family: inherit; line-height: 1.5; }
-    .field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--amber); outline-offset: -1px; }
-    .field .hint { font-size: 0.72rem; color: var(--text-dim); }
+    .field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--blue); outline-offset: -1px; }
+    .field .hint { font-size: 0.72rem; color: var(--dim); }
     .field.full { grid-column: 1 / -1; }
 
     /* ── ACTIONS ───────────────────────────────────────────────────────────── */
     .actions { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
     .btn-primary {
-      padding: 0.85rem 1.5rem; background: var(--amber); color: #000;
+      padding: 0.85rem 1.5rem; background: var(--blue); color: #fff;
       border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; width: 100%;
     }
-    .btn-primary:hover { background: var(--amber-light); }
+    .btn-primary:hover { background: var(--blue-dk); }
     .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
-    .no-location-msg { font-size: 0.85rem; color: var(--text-dim); text-align: center; padding: 0.5rem; }
 
     .single-rounds { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
-    .single-rounds .label { font-size: 0.8rem; color: var(--text-dim); margin-right: 0.25rem; }
+    .single-rounds .label { font-size: 0.8rem; color: var(--dim); margin-right: 0.25rem; }
     .btn-sm {
       padding: 0.38rem 0.75rem;
       background: transparent; color: var(--text);
       border: 1px solid var(--border); border-radius: 6px; font-size: 0.82rem; cursor: pointer;
     }
-    .btn-sm:hover { border-color: var(--amber); color: var(--amber); }
+    .btn-sm:hover { border-color: var(--blue); color: var(--blue); }
     .btn-sm:disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* ── STATUS BAR ────────────────────────────────────────────────────────── */
     #statusBar {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: none;
     }
     #statusBar.visible { display: block; }
-    .status-title { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .status-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.2rem 0; font-size: 0.88rem; }
+    .status-title { font-size: 0.78rem; color: var(--dim); margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    .status-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.2rem 0; font-size: 0.88rem; color: var(--text); }
     .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--border); }
-    .status-item.loading .status-dot { background: var(--amber); animation: pulse 0.9s ease-in-out infinite; }
-    .status-item.done .status-dot { background: var(--green); }
-    .status-item.error .status-dot { background: var(--red); }
+    .status-item.loading .status-dot { background: var(--blue); animation: pulse 0.9s ease-in-out infinite; }
+    .status-item.done    .status-dot { background: var(--green); }
+    .status-item.error   .status-dot { background: var(--red); }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
 
     /* ── RESULTS ───────────────────────────────────────────────────────────── */
     #results { display: none; }
     #results.visible { display: block; }
     .results-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; }
-    .results-header h2 { font-size: 1rem; font-weight: 600; }
-    .results-meta { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.15rem; }
+    .results-header h2 { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .results-meta { font-size: 0.8rem; color: var(--dim); margin-top: 0.15rem; }
 
     /* ── ROUND CARDS ───────────────────────────────────────────────────────── */
-    .round-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1.25rem; overflow: hidden; }
+    .round-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 1.25rem; overflow: hidden; }
     .round-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0.85rem 1.25rem; background: var(--surface2); border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.25rem; background: var(--surf2); border-bottom: 1px solid var(--border);
     }
-    .round-meta { display: flex; flex-direction: column; gap: 0.2rem; }
-    .round-meta .round-title { font-size: 0.95rem; font-weight: 600; }
-    .round-meta .round-sub { font-size: 0.78rem; color: var(--text-dim); }
+    .round-meta .round-title { font-size: 0.95rem; font-weight: 700; display: block; }
+    .round-meta .round-sub { font-size: 0.78rem; color: var(--dim); }
     .round-btns { display: flex; gap: 0.4rem; }
 
     .questions-body { padding: 1.25rem; }
     .q-item { padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
     .q-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .q-num { font-size: 0.7rem; font-weight: 700; color: var(--amber); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.2rem; }
+    .q-num { font-size: 0.7rem; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.2rem; }
     .q-text { font-size: 0.92rem; line-height: 1.5; margin-bottom: 0.3rem; }
-    .q-answer { font-size: 0.88rem; color: var(--green); }
+    .q-answer { font-size: 0.88rem; color: #2d7a3a; }
     .q-answer::before { content: '✓ '; font-weight: 700; }
 
     .lastcall-note {
       margin: 0.75rem 1.25rem 0;
       padding: 0.6rem 0.9rem;
-      background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 8px;
-      font-size: 0.82rem; color: var(--amber);
+      background: #fdf3e3; border: 1px solid #e0c48a; border-radius: 8px;
+      font-size: 0.82rem; color: #8a5c00;
     }
     .round-error { padding: 1.25rem; color: var(--red); font-size: 0.9rem; display: flex; align-items: center; gap: 0.75rem; }
+
+    /* history status */
+    .history-status { font-size: 0.72rem; color: var(--dim); margin-top: 0.3rem; }
 
     /* ── PRINT ─────────────────────────────────────────────────────────────── */
     @media print {
       body { background: white; color: #111; font-size: 11pt; }
       #authGate, #statusBar, .setup-card, .results-header, .round-btns, header nav, .actions { display: none !important; }
       #mainTool { max-width: 100%; padding: 0; }
-      header { border-bottom: 1px solid #ccc; margin-bottom: 0.75rem; }
-      header h1 span { color: #000; }
+      header { background: white; color: #111; border: none; border-bottom: 1px solid #ccc; margin-bottom: 0.75rem; border-radius: 0; }
+      header .loc-badge { background: #eee; color: #111; }
       .round-card { border: 1px solid #ccc; border-radius: 0; margin-bottom: 0; page-break-after: always; break-after: page; }
       .round-card:last-child { page-break-after: auto; break-after: auto; }
       .round-header { background: #f0f0f0; }
@@ -180,9 +190,7 @@
       .lastcall-note { border-color: #ccc; color: #555; background: #fffbf0; }
     }
 
-    @media (max-width: 600px) {
-      .form-grid { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -193,15 +201,16 @@
   <h1>Trivia <span>Generator</span></h1>
   <p>Host access required to generate questions</p>
   <input type="password" id="secretInput" placeholder="Enter host secret" autocomplete="off" />
-  <button onclick="unlock()">Unlock Generator</button>
+  <button id="unlockBtn" onclick="unlock()">Unlock Generator</button>
   <div id="authError" class="auth-error"></div>
 </div>
 
 <!-- ── MAIN TOOL ──────────────────────────────────────────────────────────── -->
 <div id="mainTool">
   <header>
-    <div class="eyebrow">Grain Craft Bar + Kitchen — Trivia League</div>
-    <h1>Question <span>Generator</span></h1>
+    <span class="brand">Grain Craft Bar + Kitchen — Trivia League</span>
+    <h1>Question Generator</h1>
+    <span class="loc-badge" id="headerLocBadge" style="display:none"></span>
     <nav>
       <a href="/host.html">↩ Score Entry</a>
       <a href="/leaderboard.html">Leaderboard</a>
@@ -214,12 +223,14 @@
     <div class="card-header"><h2>Week Setup</h2></div>
     <div class="setup-body">
 
-      <!-- Location selector -->
-      <span class="loc-label">Location for this trivia night</span>
-      <div class="loc-pills">
-        <button class="loc-pill" data-loc="Main Street" onclick="selectLocation(this)">Main Street</button>
-        <button class="loc-pill" data-loc="Exchange"    onclick="selectLocation(this)">Exchange</button>
-        <button class="loc-pill" data-loc="H2O"         onclick="selectLocation(this)">H2O</button>
+      <!-- Location selector (hidden for store hosts, auto-set) -->
+      <div id="locPickerWrap">
+        <span class="loc-label">Location for this trivia night</span>
+        <div class="loc-pills">
+          <button class="loc-pill" data-loc="Main Street" onclick="selectLocation(this)">Main Street</button>
+          <button class="loc-pill" data-loc="Exchange"    onclick="selectLocation(this)">Exchange</button>
+          <button class="loc-pill" data-loc="H2O"         onclick="selectLocation(this)">H2O</button>
+        </div>
       </div>
 
       <div class="section-divider">Round Details</div>
@@ -247,7 +258,7 @@
           <span class="hint">Announced to teams before they wager</span>
         </div>
         <div class="field full">
-          <label>Lightning Round Topic <span style="color:var(--text-dim)">(optional — leave blank for mixed)</span></label>
+          <label>Lightning Round Topic <span style="color:var(--dim);font-weight:400">(optional — leave blank for mixed)</span></label>
           <input type="text" id="lightningTopic" placeholder="e.g. 90s Movies" />
         </div>
       </div>
@@ -255,9 +266,9 @@
       <div class="section-divider">Repeat Prevention</div>
       <div class="form-grid">
         <div class="field full">
-          <label>Questions to avoid <span style="color:var(--text-dim)">(optional — paste previous weeks' questions, one per line)</span></label>
-          <textarea id="avoidList" placeholder="Paste questions from prior weeks here and the generator will avoid repeating them or the same specific facts.&#10;&#10;e.g.&#10;What beer style originated in the Czech city of Pilsen?&#10;Which cocktail is made with gin, lemon juice, and sugar?"></textarea>
-          <span class="hint">Tip: after each trivia night, paste that week's generated questions here before generating the next week.</span>
+          <label>Questions to avoid <span style="color:var(--dim);font-weight:400">(auto-loaded from history · one per line)</span></label>
+          <textarea id="avoidList" placeholder="Enter a week number above to auto-load prior questions, or paste them manually here."></textarea>
+          <div class="history-status" id="historyStatus"></div>
         </div>
       </div>
 
@@ -290,7 +301,7 @@
         <h2 id="resultsTitle">Generated Questions</h2>
         <div class="results-meta" id="resultsMeta"></div>
       </div>
-      <button class="btn-sm" onclick="printAll()">🖨️ Print All</button>
+      <button class="btn-sm" id="printAllBtn" onclick="printAll()">🖨️ Print All</button>
     </div>
     <div id="roundsContainer"></div>
   </div>
@@ -299,32 +310,76 @@
 <script>
 // ── State ─────────────────────────────────────────────────────────────────────
 let SECRET = '';
+let ROLE = '';         // 'admin' | 'host'
 let BUSY = false;
 let LOCATION = '';
-const CARD_OPTS = {};  // cardId → API body (for regeneration)
-const CARD_DATA = {};  // cardId → full round data (for saving to sheet)
+let HISTORY_LOADED_WEEK = null;
+const CARD_OPTS = {};
+const CARD_DATA = {};
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 document.getElementById('secretInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') unlock();
 });
 
-function unlock() {
+async function unlock() {
   const val = document.getElementById('secretInput').value.trim();
   if (!val) { setAuthErr('Enter your host secret.'); return; }
-  SECRET = val;
-  document.getElementById('authGate').style.display = 'none';
-  document.getElementById('mainTool').style.display = 'block';
+
+  const btn = document.getElementById('unlockBtn');
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+
+  try {
+    const resp = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: val }),
+    });
+    const data = await resp.json();
+
+    if (!resp.ok || !data.ok) {
+      setAuthErr('Invalid secret — try again.');
+      btn.disabled = false;
+      btn.textContent = 'Unlock Generator';
+      return;
+    }
+
+    SECRET = val;
+    ROLE = data.role;
+
+    if (data.role === 'host' && data.location) {
+      // Store host: auto-set location, hide picker
+      LOCATION = data.location;
+      document.getElementById('locPickerWrap').style.display = 'none';
+      const badge = document.getElementById('headerLocBadge');
+      badge.textContent = LOCATION;
+      badge.style.display = '';
+      updateLocationUI();
+    }
+    // Admin sees the location picker as usual
+
+    document.getElementById('authGate').style.display = 'none';
+    document.getElementById('mainTool').style.display = 'block';
+
+  } catch (err) {
+    setAuthErr('Connection error — try again.');
+    btn.disabled = false;
+    btn.textContent = 'Unlock Generator';
+  }
 }
 
 function setAuthErr(msg) { document.getElementById('authError').textContent = msg; }
 
 function resetToAuth() {
-  SECRET = '';
+  SECRET = ''; ROLE = ''; LOCATION = ''; HISTORY_LOADED_WEEK = null;
   document.getElementById('secretInput').value = '';
-  document.getElementById('authError').textContent = 'Invalid secret — try again.';
+  document.getElementById('authError').textContent = 'Session expired — please log in again.';
   document.getElementById('mainTool').style.display = 'none';
   document.getElementById('authGate').style.display = 'block';
+  const btn = document.getElementById('unlockBtn');
+  btn.disabled = false;
+  btn.textContent = 'Unlock Generator';
 }
 
 // ── Location selector ─────────────────────────────────────────────────────────
@@ -332,12 +387,53 @@ function selectLocation(btn) {
   document.querySelectorAll('.loc-pill').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   LOCATION = btn.dataset.loc;
+  updateLocationUI();
+}
 
+function updateLocationUI() {
   document.getElementById('r2ThemeLabel').innerHTML = `Round 2 Theme — <strong>${LOCATION}</strong>`;
-
   const genBtn = document.getElementById('btnFullNight');
   genBtn.disabled = false;
   genBtn.textContent = `⚡ Generate Full Night for ${LOCATION}`;
+}
+
+// ── Auto-load history on week change ──────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('weekNum').addEventListener('change', fetchHistory);
+});
+
+async function fetchHistory() {
+  const week = parseInt(document.getElementById('weekNum').value, 10);
+  if (!SECRET || !week || week < 2) {
+    setHistoryStatus('');
+    return;
+  }
+  if (HISTORY_LOADED_WEEK === week) return;
+
+  setHistoryStatus('Loading question history…');
+
+  try {
+    const resp = await fetch('/api/history', {
+      headers: { 'Authorization': `Bearer ${SECRET}` },
+    });
+    if (resp.status === 401) { resetToAuth(); return; }
+    const data = await resp.json();
+
+    if (data.questions && data.questions.length > 0) {
+      document.getElementById('avoidList').value = data.questions.join('\n');
+      setHistoryStatus(`✓ Auto-loaded ${data.questions.length} prior questions`);
+    } else {
+      setHistoryStatus('No prior questions found in history');
+    }
+    HISTORY_LOADED_WEEK = week;
+
+  } catch (err) {
+    setHistoryStatus('Could not load history — enter questions manually if needed');
+  }
+}
+
+function setHistoryStatus(msg) {
+  document.getElementById('historyStatus').textContent = msg;
 }
 
 // ── Inputs ────────────────────────────────────────────────────────────────────
@@ -345,13 +441,13 @@ function getInputs() {
   const raw = document.getElementById('avoidList').value.trim();
   const avoid = raw ? raw.split('\n').map(s => s.trim()).filter(Boolean) : [];
   return {
-    location:      LOCATION,
-    week:          parseInt(document.getElementById('weekNum').value) || null,
-    r2Theme:       document.getElementById('r2Theme').value.trim(),
-    r3Sub:         document.getElementById('r3Sub').value,
-    lastCallCat:   document.getElementById('lastCallCat').value.trim(),
-    lightningTopic:document.getElementById('lightningTopic').value.trim(),
-    avoidList:     avoid,
+    location:       LOCATION,
+    week:           parseInt(document.getElementById('weekNum').value) || null,
+    r2Theme:        document.getElementById('r2Theme').value.trim(),
+    r3Sub:          document.getElementById('r3Sub').value,
+    lastCallCat:    document.getElementById('lastCallCat').value.trim(),
+    lightningTopic: document.getElementById('lightningTopic').value.trim(),
+    avoidList:      avoid,
   };
 }
 
@@ -372,7 +468,10 @@ async function callApi(body) {
 function setBusy(on) {
   BUSY = on;
   document.querySelectorAll('.btn-primary, .btn-sm').forEach(b => b.disabled = on);
-  if (!on && LOCATION) document.getElementById('btnFullNight').disabled = false;
+  if (!on && LOCATION) {
+    const genBtn = document.getElementById('btnFullNight');
+    genBtn.disabled = false;
+  }
 }
 
 // ── Status bar ────────────────────────────────────────────────────────────────
@@ -382,12 +481,10 @@ function showStatus(items) {
   ).join('');
   document.getElementById('statusBar').classList.add('visible');
 }
-
 function setStatus(id, state) {
   const el = document.getElementById(`si-${id}`);
   if (el) el.className = `status-item ${state}`;
 }
-
 function hideStatus() { document.getElementById('statusBar').classList.remove('visible'); }
 
 // ── Escape ────────────────────────────────────────────────────────────────────
@@ -407,7 +504,7 @@ function questionsHtml(questions) {
 
 function makeCard(data, cardId) {
   CARD_OPTS[cardId] = data._opts;
-  CARD_DATA[cardId] = data;  // store for sheet save
+  CARD_DATA[cardId] = data;
   const pts = data.pointsEach === 'wagered' ? 'wagered' : `${data.pointsEach}pt each`;
   const sub = `${esc(data.category)} · ${data.questionCount} Q${data.questionCount !== 1 ? 's' : ''} · ${pts}`;
   const lcNote = data.round === 'lastcall'
@@ -478,9 +575,8 @@ async function saveQuestions(rounds) {
   }
 }
 
-// ── Print single card (saves to sheet first) ──────────────────────────────────
+// ── Print single card ─────────────────────────────────────────────────────────
 async function printCard(cardId) {
-  // Save this round to sheet in background (don't block print on failure)
   const data = CARD_DATA[cardId];
   if (data) saveQuestions([data]);
 
@@ -491,12 +587,10 @@ async function printCard(cardId) {
     body{font-family:system-ui,sans-serif;padding:1rem;color:#111;font-size:11pt}
     .round-header{background:#f0f0f0;padding:.75rem 1rem;border:1px solid #ccc;border-bottom:none}
     .round-title{font-size:1rem;font-weight:700;display:block}
-    .round-sub{font-size:.8rem;color:#555}
-    .round-btns{display:none}
+    .round-sub{font-size:.8rem;color:#555}.round-btns{display:none}
     .questions-body{border:1px solid #ccc;padding:.75rem 1rem}
-    .q-item{padding:.6rem 0;border-bottom:1px solid #e0e0e0}
-    .q-item:last-child{border-bottom:none}
-    .q-num{font-size:.7em;font-weight:700;color:#666;text-transform:uppercase;margin-bottom:.15rem}
+    .q-item{padding:.6rem 0;border-bottom:1px solid #e0e0e0}.q-item:last-child{border-bottom:none}
+    .q-num{font-size:.7em;font-weight:700;color:#555;text-transform:uppercase;margin-bottom:.15rem}
     .q-answer{color:#1a6b1a}.q-answer::before{content:'✓ ';font-weight:700}
     .lastcall-note{margin:.5rem 0;padding:.5rem .75rem;border:1px solid #ccc;background:#fffbf0;font-size:.85rem;color:#7a5a00}
     .round-error{display:none}
@@ -505,16 +599,15 @@ async function printCard(cardId) {
   win.onload = () => { win.focus(); win.print(); };
 }
 
-// ── Print all (saves everything to sheet first) ───────────────────────────────
+// ── Print all ─────────────────────────────────────────────────────────────────
 async function printAll() {
   const rounds = Object.values(CARD_DATA).filter(Boolean);
   if (rounds.length > 0) {
-    // Show brief saving indicator
-    const btn = document.querySelector('[onclick="printAll()"]');
-    const orig = btn?.textContent;
-    if (btn) btn.textContent = 'Saving…';
+    const btn = document.getElementById('printAllBtn');
+    const orig = btn.textContent;
+    btn.textContent = 'Saving…';
     await saveQuestions(rounds);
-    if (btn) btn.textContent = orig;
+    btn.textContent = orig;
   }
   window.print();
 }
@@ -555,28 +648,21 @@ async function generateFullNight() {
   document.getElementById('roundsContainer').innerHTML = '';
 
   showStatus([
-    { id: 'r1',       label: "Round 1 — Grain's House Round" },
-    { id: 'r2',       label: `Round 2 — ${LOCATION}: ${inp.r2Theme || '(no theme set)'}` },
-    { id: 'r3',       label: `Round 3 — General Knowledge: ${inp.r3Sub}` },
-    { id: 'lightning',label: `Lightning${inp.lightningTopic ? ': ' + inp.lightningTopic : ' (mixed)'}` },
-    { id: 'lastcall', label: `Last Call — ${inp.lastCallCat || '(no category set)'}` },
+    { id: 'r1',        label: "Round 1 — Grain's House Round" },
+    { id: 'r2',        label: `Round 2 — ${LOCATION}: ${inp.r2Theme || '(no theme set)'}` },
+    { id: 'r3',        label: `Round 3 — General Knowledge: ${inp.r3Sub}` },
+    { id: 'lightning', label: `Lightning${inp.lightningTopic ? ': ' + inp.lightningTopic : ' (mixed)'}` },
+    { id: 'lastcall',  label: `Last Call — ${inp.lastCallCat || '(no category set)'}` },
   ]);
-  showResults(
-    `Week ${inp.week || '—'} · ${LOCATION}`,
-    'Generating 5 rounds…'
-  );
+  showResults(`Week ${inp.week || '—'} · ${LOCATION}`, 'Generating 5 rounds…');
 
-  const sharedParams = {
-    weekNumber: inp.week,
-    avoidList: inp.avoidList,
-  };
-
+  const shared = { weekNumber: inp.week, avoidList: inp.avoidList };
   const opts = {
-    r1:       { mode: 'round1', ...sharedParams },
-    r2:       { mode: 'round2', location: LOCATION, theme: inp.r2Theme || 'General Knowledge', ...sharedParams },
-    r3:       { mode: 'round3', subcategory: inp.r3Sub, ...sharedParams },
-    lightning:{ mode: 'lightning', topic: inp.lightningTopic, ...sharedParams },
-    lastcall: { mode: 'lastcall', category: inp.lastCallCat || 'General Knowledge', ...sharedParams },
+    r1:        { mode: 'round1', ...shared },
+    r2:        { mode: 'round2', location: LOCATION, theme: inp.r2Theme || 'General Knowledge', ...shared },
+    r3:        { mode: 'round3', subcategory: inp.r3Sub, ...shared },
+    lightning: { mode: 'lightning', topic: inp.lightningTopic, ...shared },
+    lastcall:  { mode: 'lastcall', category: inp.lastCallCat || 'General Knowledge', ...shared },
   };
 
   async function gen(statusId, apiOpts) {
@@ -585,7 +671,7 @@ async function generateFullNight() {
       data._opts = apiOpts;
       setStatus(statusId, 'done');
       return data;
-    } catch (err) {
+    } catch {
       setStatus(statusId, 'error');
       return null;
     }
@@ -600,11 +686,11 @@ async function generateFullNight() {
   ]);
 
   const rounds = [
-    { data: r1,       id: 'card-r1',        label: "Round 1 — Grain's House Round", opts: opts.r1 },
-    { data: r2,       id: 'card-r2',         label: `Round 2 — ${LOCATION}`,         opts: opts.r2 },
-    { data: r3,       id: 'card-r3',         label: `Round 3 — ${inp.r3Sub}`,         opts: opts.r3 },
-    { data: lightning,id: 'card-lightning',  label: 'Lightning Round',                opts: opts.lightning },
-    { data: lastcall, id: 'card-lastcall',   label: 'Last Call',                     opts: opts.lastcall },
+    { data: r1,        id: 'card-r1',       label: "Round 1 — Grain's House Round", opts: opts.r1 },
+    { data: r2,        id: 'card-r2',       label: `Round 2 — ${LOCATION}`,          opts: opts.r2 },
+    { data: r3,        id: 'card-r3',       label: `Round 3 — ${inp.r3Sub}`,          opts: opts.r3 },
+    { data: lightning, id: 'card-lightning',label: 'Lightning Round',                 opts: opts.lightning },
+    { data: lastcall,  id: 'card-lastcall', label: 'Last Call',                       opts: opts.lastcall },
   ];
 
   for (const { data, id, label, opts: o } of rounds) {
@@ -627,7 +713,6 @@ async function genSingle(mode) {
   if (BUSY) return;
   const inp = getInputs();
   const shared = { weekNumber: inp.week, avoidList: inp.avoidList };
-
   let apiOpts, cardId, label;
 
   switch (mode) {

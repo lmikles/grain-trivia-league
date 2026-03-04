@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Standings — Grain Trivia League</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #f2e1cf;
+      --surface: #ffffff;
+      --surf2:   #f9f0e6;
+      --border:  #d4bfa3;
+      --blue:    #3671b7;
+      --green:   #9ab59e;
+      --text:    #1a1209;
+      --dim:     #7a6a56;
+      --gold:    #c9860a;
+      --radius:  8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 0 1rem 3rem;
+    }
+
+    header {
+      background: var(--blue);
+      color: #fff;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 1.4rem; font-weight: 700; }
+    header span { font-size: 0.9rem; opacity: 0.85; }
+    header nav { margin-left: auto; display: flex; gap: 1rem; }
+    header nav a { color: #fff; text-decoration: none; font-size: 0.85rem; opacity: 0.85; }
+    header nav a:hover { opacity: 1; text-decoration: underline; }
+
+    .page { max-width: 900px; margin: 2rem auto; }
+
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--blue);
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .section { margin-bottom: 2.5rem; }
+
+    /* Location tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 0.4rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--dim);
+      transition: all 0.15s;
+    }
+    .tab.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    /* Tables */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    thead th {
+      background: var(--surf2);
+      padding: 0.6rem 0.9rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--dim);
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surf2); }
+    tbody td {
+      padding: 0.6rem 0.9rem;
+      vertical-align: middle;
+    }
+
+    .rank { font-weight: 700; color: var(--dim); width: 2rem; }
+    .team-name { font-weight: 600; }
+    .pts { font-weight: 700; color: var(--blue); text-align: right; }
+    .pts-dim { color: var(--dim); text-align: right; }
+    td.center { text-align: center; }
+
+    /* Qualifier badges */
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      margin-left: 0.4rem;
+      vertical-align: middle;
+    }
+    .badge-champ { background: var(--gold); color: #fff; }
+    .badge-wild  { background: var(--green); color: #fff; }
+
+    /* Week selector */
+    .week-select {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      color: var(--dim);
+    }
+    .week-select select {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      background: var(--surface);
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .note {
+      font-size: 0.8rem;
+      color: var(--dim);
+      margin-top: 0.75rem;
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 600px) {
+      .grid2 { grid-template-columns: 1fr; }
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--dim);
+      margin-top: 3rem;
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🍺 Grain Trivia League</h1>
+  <span>Grain Craft Bar + Kitchen — Delaware</span>
+  <nav>
+    <a href="/register.html">Register</a>
+    <a href="/leaderboard.html">Leaderboard</a>
+    <a href="/standings.html">Standings</a>
+  </nav>
+</header>
+
+<div class="page">
+
+  <!-- SEASON STANDINGS -->
+  <div class="section">
+    <h2>Season Standings</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th class="rank">#</th>
+            <th>Team</th>
+            <th>Location</th>
+            <th class="pts">Season Pts</th>
+            <th class="pts-dim" style="text-align:right">Weeks Played</th>
+          </tr>
+        </thead>
+        <tbody id="seasonBody"></tbody>
+      </table>
+    </div>
+    <p class="note">
+      <strong>Championship qualifiers:</strong>
+      <span style="color:var(--gold)">■</span> Location champion (top team per location) &nbsp;
+      <span style="color:var(--green)">■</span> Wild card (next 6 highest point totals, any location)
+    </p>
+  </div>
+
+  <!-- WEEKLY RESULTS -->
+  <div class="section">
+    <h2>Weekly Results</h2>
+    <div class="week-select">
+      <label for="weekPicker">Week:</label>
+      <select id="weekPicker"></select>
+    </div>
+
+    <div class="tabs" id="locationTabs">
+      <button class="tab active" data-loc="all">All Locations</button>
+      <button class="tab" data-loc="Main Street">Main Street</button>
+      <button class="tab" data-loc="Exchange">Exchange</button>
+      <button class="tab" data-loc="H2O">H2O</button>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th class="rank">#</th>
+            <th>Team</th>
+            <th>Location</th>
+            <th class="pts">Score</th>
+            <th class="pts-dim" style="text-align:right">Last Call Wager</th>
+          </tr>
+        </thead>
+        <tbody id="weeklyBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p><a href="/">Grain Trivia League</a> · Grain Craft Bar + Kitchen, Delaware</p>
+</footer>
+
+<script>
+// ─── Dummy Data ───────────────────────────────────────────────────────────────
+// Replace with real API call when backend is ready.
+
+const LOCATIONS = ['Main Street', 'Exchange', 'H2O'];
+
+const TEAMS = [
+  // name, location, weeklyScores (array indexed by week 1-8)
+  { name: 'Quiz Khalifa',       loc: 'Main Street', scores: [38, 42, 35, 44, 41, 38, 46, 40] },
+  { name: 'The Quizzard of Oz', loc: 'Main Street', scores: [36, 38, 40, 39, 36, 42, 38, 44] },
+  { name: 'Trivia Newton John', loc: 'Main Street', scores: [34, 36, 38, 35, 39, 34, 40, 36] },
+  { name: 'Let\'s Get Quizzical', loc: 'Main Street', scores: [30, 32, 34, 38, 33, 36, 35, 38] },
+  { name: 'No Idea',            loc: 'Exchange',    scores: [40, 44, 38, 46, 43, 40, 44, 42] },
+  { name: 'Ctrl + Alt + Defeat',loc: 'Exchange',    scores: [38, 40, 42, 41, 40, 38, 42, 40] },
+  { name: '404 Team Not Found', loc: 'Exchange',    scores: [35, 37, 36, 38, 37, 35, 38, 36] },
+  { name: 'Average Joes',       loc: 'Exchange',    scores: [28, 30, 32, 34, 30, 32, 30, 32] },
+  { name: 'Cereal Killers',     loc: 'H2O',         scores: [42, 44, 40, 46, 44, 42, 46, 44] },
+  { name: 'Wayne\'s Worldly',   loc: 'H2O',         scores: [38, 40, 42, 40, 42, 40, 44, 42] },
+  { name: 'Smarty Pints',       loc: 'H2O',         scores: [36, 38, 36, 38, 36, 38, 40, 38] },
+  { name: 'I Am Smarticus',     loc: 'H2O',         scores: [30, 34, 32, 36, 33, 30, 34, 32] },
+];
+
+const TOTAL_WEEKS = 8;
+const CURRENT_WEEK = 8;
+
+// Compute season totals
+const seasonData = TEAMS.map(t => ({
+  ...t,
+  total: t.scores.reduce((a, b) => a + b, 0),
+  played: t.scores.filter(s => s > 0).length,
+})).sort((a, b) => b.total - a.total);
+
+// Determine qualifiers
+function computeQualifiers(data) {
+  const champs = new Set();
+  const champTeams = new Set();
+
+  // Top 1 per location
+  for (const loc of LOCATIONS) {
+    const top = data.find(t => t.loc === loc);
+    if (top) { champs.add(top.name); champTeams.add(top.name); }
+  }
+
+  // Next 6 wild cards (not already champs)
+  let wildcardCount = 0;
+  const wildcards = new Set();
+  for (const t of data) {
+    if (wildcardCount >= 6) break;
+    if (!champTeams.has(t.name)) {
+      wildcards.add(t.name);
+      wildcardCount++;
+    }
+  }
+
+  return { champs, wildcards };
+}
+
+const { champs, wildcards } = computeQualifiers(seasonData);
+
+// ─── Render Season Table ──────────────────────────────────────────────────────
+function renderSeason() {
+  const tbody = document.getElementById('seasonBody');
+  tbody.innerHTML = seasonData.map((t, i) => {
+    let badge = '';
+    if (champs.has(t.name))    badge = '<span class="badge badge-champ">CHAMP</span>';
+    else if (wildcards.has(t.name)) badge = '<span class="badge badge-wild">WILD CARD</span>';
+    return `<tr>
+      <td class="rank">${i + 1}</td>
+      <td class="team-name">${t.name}${badge}</td>
+      <td style="color:var(--dim)">${t.loc}</td>
+      <td class="pts">${t.total}</td>
+      <td class="pts-dim">${t.played}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── Weekly Results ───────────────────────────────────────────────────────────
+let selectedWeek = CURRENT_WEEK;
+let selectedLoc  = 'all';
+
+function buildWeekPicker() {
+  const sel = document.getElementById('weekPicker');
+  for (let w = TOTAL_WEEKS; w >= 1; w--) {
+    const opt = document.createElement('option');
+    opt.value = w;
+    opt.textContent = `Week ${w}`;
+    if (w === CURRENT_WEEK) opt.selected = true;
+    sel.appendChild(opt);
+  }
+  sel.addEventListener('change', () => {
+    selectedWeek = parseInt(sel.value, 10);
+    renderWeekly();
+  });
+}
+
+function renderWeekly() {
+  const idx = selectedWeek - 1;
+  let rows = TEAMS
+    .filter(t => selectedLoc === 'all' || t.loc === selectedLoc)
+    .map(t => ({ ...t, score: t.scores[idx] || 0, wager: Math.floor(Math.random() * 20) * 2 }))
+    .sort((a, b) => b.score - a.score);
+
+  const tbody = document.getElementById('weeklyBody');
+  tbody.innerHTML = rows.map((t, i) => `<tr>
+    <td class="rank">${i + 1}</td>
+    <td class="team-name">${t.name}</td>
+    <td style="color:var(--dim)">${t.loc}</td>
+    <td class="pts">${t.score}</td>
+    <td class="pts-dim">${t.wager}</td>
+  </tr>`).join('');
+}
+
+// ─── Location Tabs ────────────────────────────────────────────────────────────
+document.getElementById('locationTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab');
+  if (!btn) return;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedLoc = btn.dataset.loc;
+  renderWeekly();
+});
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+renderSeason();
+buildWeekPicker();
+renderWeekly();
+</script>
+</body>
+</html>
