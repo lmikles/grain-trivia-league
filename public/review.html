@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Review — OMG Social</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz:wght@400;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         oklch(93% 0.022 72);
+      --surface:    oklch(99% 0.008 72);
+      --surf2:      oklch(96% 0.018 72);
+      --border:     oklch(82% 0.03 72);
+      --blue:       oklch(52% 0.13 248);
+      --blue-dk:    oklch(44% 0.13 248);
+      --blue-lt:    oklch(93% 0.04 248);
+      --blue-bd:    oklch(80% 0.07 248);
+      --text:       oklch(17% 0.018 60);
+      --dim:        oklch(50% 0.025 60);
+      --green:      oklch(50% 0.12 155);
+      --green-lt:   oklch(95% 0.04 155);
+      --green-bd:   oklch(82% 0.08 155);
+      --red:        oklch(50% 0.14 15);
+      --red-lt:     oklch(95% 0.04 15);
+      --red-bd:     oklch(82% 0.08 15);
+      --amber:      oklch(58% 0.14 72);
+      --amber-lt:   oklch(96% 0.04 72);
+      --amber-bd:   oklch(84% 0.08 72);
+      --purple:     oklch(52% 0.15 295);
+      --purple-lt:  oklch(95% 0.04 295);
+      --purple-bd:  oklch(82% 0.07 295);
+      --radius:     8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Work Sans', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      background: var(--blue);
+      padding: 0.9rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .header-brand img { height: 32px; width: auto; }
+    .header-brand-text {
+      font-family: 'Yanone Kaffeesatz', sans-serif;
+      font-size: 1.35rem; font-weight: 700; color: #fff;
+      letter-spacing: 0.02em; line-height: 1;
+    }
+    .header-eyebrow {
+      font-size: 0.58rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(255,255,255,0.6);
+      line-height: 1; margin-bottom: 1px;
+    }
+    .header-nav { display: flex; gap: 1.25rem; }
+    .header-nav a {
+      color: rgba(255,255,255,0.72); text-decoration: none;
+      font-size: 0.78rem; font-weight: 500; transition: color 0.12s;
+    }
+    .header-nav a:hover { color: #fff; }
+
+    /* ── Layout ── */
+    .container { max-width: 680px; margin: 0 auto; padding: 1.75rem 1.25rem 5rem; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 0.85rem;
+    }
+    .card-title {
+      font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.14em; color: var(--dim); margin-bottom: 1rem;
+    }
+    .section-heading {
+      font-family: 'Yanone Kaffeesatz', sans-serif;
+      font-size: 1.45rem; font-weight: 700; color: var(--text);
+      margin: 1.75rem 0 0.5rem;
+      display: flex; align-items: baseline; gap: 0.5rem;
+    }
+    .section-heading-num {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--dim);
+    }
+
+    /* ── Auth ── */
+    #authScreen { display: block; }
+    #mainScreen { display: none; }
+    .auth-wrap { margin-top: 2.5rem; text-align: center; }
+    .auth-eyebrow {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--dim); margin-bottom: 0.5rem;
+    }
+    .auth-heading {
+      font-family: 'Yanone Kaffeesatz', sans-serif; font-size: 2.2rem;
+      font-weight: 700; color: var(--text); margin-bottom: 1.25rem; line-height: 1;
+    }
+
+    /* ── Form controls ── */
+    .field { margin-bottom: 0.75rem; }
+    label {
+      display: block; font-size: 0.62rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--dim); margin-bottom: 0.3rem;
+    }
+    input[type="text"], input[type="password"], textarea {
+      width: 100%; background: var(--surf2); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); font-family: 'Work Sans', inherit;
+      font-size: 0.92rem; padding: 0.55rem 0.75rem; appearance: none;
+      transition: border-color 0.12s;
+    }
+    input:focus, textarea:focus {
+      outline: 2px solid var(--blue); outline-offset: -1px; border-color: transparent;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    /* ── Messages ── */
+    .msg { margin-top: 0.6rem; padding: 0.55rem 0.8rem; border-radius: 6px; font-size: 0.85rem; display: none; }
+    .msg.error   { display: block; background: var(--red-lt);   border: 1px solid var(--red-bd);   color: var(--red); }
+    .msg.success { display: block; background: var(--green-lt); border: 1px solid var(--green-bd); color: var(--green); }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      width: 100%; border: none; border-radius: 8px; cursor: pointer;
+      font-family: 'Work Sans', inherit; font-size: 0.95rem; font-weight: 700;
+      padding: 0.8rem 1.25rem; background: var(--blue); color: #fff; transition: all 0.15s;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--blue-dk); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary.success { background: var(--green); }
+    .btn-primary.success:hover:not(:disabled) { background: oklch(44% 0.12 155); }
+
+    .btn-sm {
+      border: none; border-radius: 6px; cursor: pointer; font-family: inherit;
+      font-size: 0.78rem; font-weight: 700; padding: 0.35rem 0.75rem;
+      white-space: nowrap; transition: all 0.12s;
+    }
+    .btn-approve  { background: var(--green-lt);  color: var(--green);  border: 1px solid var(--green-bd); }
+    .btn-approve:hover  { background: var(--green); color: #fff; }
+    .btn-approve.active { background: var(--green); color: #fff; }
+    .btn-reject   { background: var(--red-lt);    color: var(--red);    border: 1px solid var(--red-bd); }
+    .btn-reject:hover   { background: var(--red); color: #fff; }
+    .btn-reject.active  { background: var(--red); color: #fff; }
+    .btn-edit     { background: var(--surf2);     color: var(--dim);    border: 1px solid var(--border); }
+    .btn-edit:hover     { border-color: var(--blue); color: var(--blue); }
+    .btn-edit.active    { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
+    .btn-save     { background: var(--blue); color: #fff; }
+    .btn-save:hover     { background: var(--blue-dk); }
+    .btn-cancel   { background: var(--surf2); color: var(--dim); border: 1px solid var(--border); }
+    .btn-cancel:hover   { color: var(--text); }
+
+    /* ── Inputs signals ── */
+    .signal-grid {
+      display: grid; gap: 0.5rem;
+    }
+    .signal-item {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+    .signal-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .signal-label {
+      min-width: 90px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--dim); padding-top: 1px;
+    }
+    .signal-val { color: var(--text); line-height: 1.45; }
+    .signal-val strong { font-weight: 600; }
+
+    .weather-days {
+      display: flex; gap: 0.35rem; overflow-x: auto; padding-bottom: 0.25rem;
+      scrollbar-width: none;
+    }
+    .weather-days::-webkit-scrollbar { display: none; }
+    .weather-day {
+      flex: 0 0 72px; background: var(--surf2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.5rem 0.4rem; text-align: center;
+    }
+    .wd-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+    .wd-icon  { font-size: 1.4rem; margin: 0.15rem 0; }
+    .wd-temps { font-size: 0.75rem; font-weight: 600; }
+    .wd-cond  { font-size: 0.62rem; color: var(--dim); margin-top: 2px; }
+
+    .tag {
+      display: inline-flex; align-items: center;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.18rem 0.5rem; border-radius: 4px; white-space: nowrap;
+    }
+    .tag-ig    { background: var(--purple-lt); color: var(--purple); border: 1px solid var(--purple-bd); }
+    .tag-fb    { background: var(--blue-lt);   color: var(--blue);   border: 1px solid var(--blue-bd); }
+    .tag-promo { background: var(--amber-lt);  color: var(--amber);  border: 1px solid var(--amber-bd); }
+    .tag-engage{ background: var(--blue-lt);   color: var(--blue);   border: 1px solid var(--blue-bd); }
+    .tag-info  { background: var(--surf2);     color: var(--dim);    border: 1px solid var(--border); }
+    .tag-event { background: var(--green-lt);  color: var(--green);  border: 1px solid var(--green-bd); }
+
+    /* ── Topic cards ── */
+    .topic-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.1rem;
+      margin-bottom: 0.65rem; transition: border-color 0.15s;
+    }
+    .topic-card.approved { border-color: var(--green-bd); background: oklch(99% 0.006 155); }
+    .topic-card.rejected { border-color: var(--red-bd);   background: oklch(99% 0.005 15); opacity: 0.65; }
+
+    .topic-meta {
+      display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;
+      margin-bottom: 0.6rem;
+    }
+    .topic-date {
+      font-size: 0.72rem; font-weight: 600; color: var(--dim); margin-left: auto;
+    }
+    .topic-body {
+      font-size: 0.93rem; line-height: 1.55; color: var(--text);
+      margin-bottom: 0.45rem;
+    }
+    .topic-angle {
+      font-size: 0.72rem; color: var(--dim); margin-bottom: 0.75rem;
+      font-style: italic;
+    }
+    .topic-actions {
+      display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;
+    }
+    .topic-edit-area { margin-top: 0.65rem; display: none; }
+    .topic-edit-area.open { display: block; }
+    .topic-edit-area textarea { margin-bottom: 0.4rem; }
+    .topic-edit-buttons { display: flex; gap: 0.4rem; }
+
+    .custom-topic-form {
+      background: var(--surf2); border: 1px dashed var(--border);
+      border-radius: var(--radius); padding: 1rem 1.1rem; margin-bottom: 0.65rem;
+      display: none;
+    }
+    .custom-topic-form.open { display: block; }
+    .custom-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem; }
+    @media (max-width: 480px) { .custom-form-row { grid-template-columns: 1fr; } }
+    .custom-form-select {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); font-family: 'Work Sans', inherit;
+      font-size: 0.88rem; padding: 0.5rem 0.65rem; appearance: none;
+    }
+    .custom-form-select:focus {
+      outline: 2px solid var(--blue); outline-offset: -1px; border-color: transparent;
+    }
+
+    /* ── Submit section ── */
+    .submit-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem; margin-top: 1.5rem;
+    }
+    .submit-summary {
+      font-size: 0.88rem; color: var(--dim); margin-bottom: 1rem; text-align: center;
+    }
+    .submit-summary strong { color: var(--text); font-weight: 700; font-size: 1rem; }
+    .submit-list {
+      margin: 0.75rem 0 1rem; border: 1px solid var(--border); border-radius: 6px;
+      overflow: hidden; display: none;
+    }
+    .submit-list.show { display: block; }
+    .submit-list-item {
+      display: flex; gap: 0.6rem; align-items: flex-start;
+      padding: 0.6rem 0.85rem; border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+    .submit-list-item:last-child { border-bottom: none; }
+    .sli-date { color: var(--dim); white-space: nowrap; font-size: 0.75rem; min-width: 58px; padding-top: 1px; }
+    .sli-text { color: var(--text); line-height: 1.4; }
+
+    /* ── Loading ── */
+    .loading-row {
+      text-align: center; padding: 2rem; color: var(--dim); font-size: 0.9rem;
+    }
+    .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2px solid var(--border); border-top-color: var(--blue);
+      border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Add custom topic button ── */
+    .add-custom-btn {
+      display: flex; align-items: center; gap: 0.4rem;
+      background: none; border: 1px dashed var(--border); border-radius: 8px;
+      width: 100%; padding: 0.7rem 1rem; cursor: pointer;
+      font-family: inherit; font-size: 0.85rem; font-weight: 600;
+      color: var(--blue); transition: all 0.12s;
+      margin-bottom: 0.65rem;
+    }
+    .add-custom-btn:hover { border-color: var(--blue); background: var(--blue-lt); }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-brand">
+    <img src="/logo.png" alt="Grain" />
+    <div>
+      <div class="header-eyebrow">OMG Social</div>
+      <div class="header-brand-text">Content Review</div>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <a href="/">Trivia</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- ══ AUTH ══ -->
+  <div id="authScreen">
+    <div class="auth-wrap">
+      <div class="auth-eyebrow">OMG Social — Board Access</div>
+      <div class="auth-heading">Review This Week's<br>Content Proposal</div>
+      <div class="card" style="max-width:340px;margin:0 auto;">
+        <div class="field">
+          <label for="secretInput">Access Code</label>
+          <input type="password" id="secretInput" placeholder="Enter your host secret" autocomplete="current-password" />
+        </div>
+        <button class="btn-primary" onclick="doLogin()">Sign In</button>
+        <div class="msg" id="authMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN ══ -->
+  <div id="mainScreen">
+
+    <!-- ── Section 1: This Week's Inputs ── -->
+    <div class="section-heading">
+      <span class="section-heading-num">01 —</span>
+      This Week's Signals
+    </div>
+    <p style="font-size:0.85rem;color:var(--dim);margin-bottom:1rem;">
+      Read-only context the agent used to build this week's proposal.
+    </p>
+
+    <div id="inputsArea">
+      <div class="loading-row"><span class="spinner"></span>Loading…</div>
+    </div>
+
+    <!-- ── Section 2: Proposed Topics ── -->
+    <div class="section-heading" style="margin-top:2rem;">
+      <span class="section-heading-num">02 —</span>
+      Proposed Content Topics
+    </div>
+    <p style="font-size:0.85rem;color:var(--dim);margin-bottom:1rem;">
+      Review each proposed post. Approve, edit the copy, or reject. Add custom topics below.
+    </p>
+
+    <div id="topicsArea">
+      <div class="loading-row"><span class="spinner"></span>Loading…</div>
+    </div>
+
+    <!-- Add custom topic -->
+    <button class="add-custom-btn" id="addCustomBtn" onclick="toggleCustomForm()" style="display:none;">
+      + Add Custom Topic
+    </button>
+    <div class="custom-topic-form" id="customTopicForm">
+      <div class="card-title">New Custom Topic</div>
+      <div class="custom-form-row">
+        <div>
+          <label>Platform</label>
+          <select class="custom-form-select" id="customPlatform">
+            <option value="Instagram">Instagram</option>
+            <option value="Facebook">Facebook</option>
+          </select>
+        </div>
+        <div>
+          <label>Post Type</label>
+          <select class="custom-form-select" id="customPostType">
+            <option value="Promotional">Promotional</option>
+            <option value="Engaging">Engaging</option>
+            <option value="Informational">Informational</option>
+            <option value="Event promo">Event promo</option>
+          </select>
+        </div>
+      </div>
+      <div class="custom-form-row">
+        <div>
+          <label>Date</label>
+          <input type="text" id="customDate" placeholder="2026-05-06" />
+        </div>
+        <div>
+          <label>Time</label>
+          <input type="text" id="customTime" placeholder="10:00" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Post Copy</label>
+        <textarea id="customText" placeholder="Write your post copy here…"></textarea>
+      </div>
+      <div style="display:flex;gap:0.4rem;">
+        <button class="btn-sm btn-save" onclick="addCustomTopic()">Add Topic</button>
+        <button class="btn-sm btn-cancel" onclick="toggleCustomForm()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- ── Section 3: Submit ── -->
+    <div class="section-heading" style="margin-top:2rem;">
+      <span class="section-heading-num">03 —</span>
+      Generate Schedule
+    </div>
+    <div class="submit-card">
+      <div class="submit-summary" id="submitSummary">Review topics above to continue.</div>
+      <div class="submit-list" id="submitList"></div>
+      <button class="btn-primary" id="submitBtn" disabled onclick="doSubmit()">
+        Generate Content Schedule
+      </button>
+      <div class="msg" id="submitMsg"></div>
+    </div>
+
+  </div><!-- /mainScreen -->
+</div><!-- /container -->
+
+<script>
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+let authSecret = null;
+let topicsState = {}; // id → { status, editedText? }
+let customTopics = [];
+let allTopics = [];   // merged from API + custom
+
+// ---------------------------------------------------------------------------
+// Auth
+// ---------------------------------------------------------------------------
+function doLogin() {
+  const input = document.getElementById('secretInput');
+  const msg   = document.getElementById('authMsg');
+  const secret = input.value.trim();
+  if (!secret) { showMsg(msg, 'error', 'Enter your access code.'); return; }
+
+  fetch('/api/auth', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secret }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        authSecret = secret;
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('mainScreen').style.display = 'block';
+        loadProposal();
+      } else {
+        showMsg(msg, 'error', 'Invalid access code.');
+      }
+    })
+    .catch(() => showMsg(msg, 'error', 'Could not reach server.'));
+}
+
+document.getElementById('secretInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+// ---------------------------------------------------------------------------
+// Load proposal
+// ---------------------------------------------------------------------------
+function loadProposal() {
+  fetch('/api/review/proposal')
+    .then(r => r.json())
+    .then(data => {
+      renderInputs(data.inputs);
+      allTopics = data.topics;
+      // Merge saved state into local state
+      allTopics.forEach(t => {
+        topicsState[t.id] = { status: t.status || 'pending', editedText: t.editedText };
+      });
+      renderTopics();
+      document.getElementById('addCustomBtn').style.display = 'flex';
+    })
+    .catch(() => {
+      document.getElementById('inputsArea').innerHTML = '<div class="loading-row" style="color:var(--red)">Failed to load proposal.</div>';
+    });
+}
+
+// ---------------------------------------------------------------------------
+// Render inputs (Section 1)
+// ---------------------------------------------------------------------------
+function weatherIcon(condition) {
+  const c = (condition || '').toLowerCase();
+  if (c.includes('shower') || c.includes('rain')) return '🌦';
+  if (c.includes('thunder')) return '⛈';
+  if (c.includes('cloud') || c.includes('partly')) return '⛅';
+  if (c.includes('overcast')) return '☁';
+  return '☀️';
+}
+
+function renderInputs(inputs) {
+  const area = document.getElementById('inputsArea');
+  const html = [];
+
+  // Weather
+  html.push('<div class="card">');
+  html.push('<div class="card-title">Weather Forecast</div>');
+  html.push('<div style="font-size:0.88rem;color:var(--dim);margin-bottom:0.75rem;">' + esc(inputs.weather.summary) + '</div>');
+  html.push('<div class="weather-days">');
+  inputs.weather.days.forEach(d => {
+    html.push(`<div class="weather-day">
+      <div class="wd-label">${esc(d.label)}</div>
+      <div class="wd-icon">${weatherIcon(d.condition)}</div>
+      <div class="wd-temps">${d.high}° / ${d.low}°</div>
+      <div class="wd-cond">${esc(d.condition)}</div>
+    </div>`);
+  });
+  html.push('</div></div>');
+
+  // Events
+  html.push('<div class="card">');
+  html.push('<div class="card-title">Grain Events This Week</div>');
+  inputs.events.forEach(ev => {
+    html.push(`<div class="signal-item">
+      <div class="signal-label">${esc(ev.day)}</div>
+      <div class="signal-val"><strong>${esc(ev.name)}</strong> · ${esc(ev.time)} · ${esc(ev.location)}</div>
+    </div>`);
+  });
+  html.push('</div>');
+
+  // Sports
+  html.push('<div class="card">');
+  html.push('<div class="card-title">Local Sports Schedule</div>');
+  inputs.sports.forEach(s => {
+    const d = new Date(s.date + 'T12:00:00');
+    const label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    html.push(`<div class="signal-item">
+      <div class="signal-label">${esc(label)}</div>
+      <div class="signal-val"><strong>${esc(s.team)}</strong> ${esc(s.opponent)} · ${esc(s.time)}</div>
+    </div>`);
+  });
+  html.push('</div>');
+
+  // Holidays
+  html.push('<div class="card">');
+  html.push('<div class="card-title">Holidays & Notable Dates</div>');
+  inputs.holidays.forEach(h => {
+    html.push(`<div class="signal-item">
+      <div class="signal-label">${esc(h.date.slice(5))}</div>
+      <div class="signal-val"><strong>${esc(h.name)}</strong> — ${esc(h.note)}</div>
+    </div>`);
+  });
+  html.push('</div>');
+
+  // Specials
+  html.push('<div class="card">');
+  html.push('<div class="card-title">Current Specials & Rotating Taps</div>');
+  inputs.specials.forEach(s => {
+    html.push(`<div class="signal-item">
+      <div class="signal-label" style="min-width:80px;">${esc(s.type)}</div>
+      <div class="signal-val">${esc(s.item)}</div>
+    </div>`);
+  });
+  html.push('</div>');
+
+  area.innerHTML = html.join('');
+}
+
+// ---------------------------------------------------------------------------
+// Render topics (Section 2)
+// ---------------------------------------------------------------------------
+function postTypeTag(type) {
+  const cls = {
+    'Promotional': 'tag-promo',
+    'Engaging':    'tag-engage',
+    'Informational': 'tag-info',
+    'Event promo': 'tag-event',
+  }[type] || 'tag-info';
+  return `<span class="tag ${cls}">${esc(type)}</span>`;
+}
+
+function platformTag(platform) {
+  const cls = platform === 'Instagram' ? 'tag-ig' : 'tag-fb';
+  return `<span class="tag ${cls}">${esc(platform)}</span>`;
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function renderTopics() {
+  const area = document.getElementById('topicsArea');
+  const html = [];
+
+  const allToRender = [...allTopics, ...customTopics];
+
+  allToRender.forEach(t => {
+    const state  = topicsState[t.id] || { status: 'pending' };
+    const status = state.status;
+    const displayText = state.editedText || t.topic;
+    const cardCls = status === 'approved' ? 'approved' : status === 'rejected' ? 'rejected' : '';
+
+    html.push(`<div class="topic-card ${cardCls}" id="card-${t.id}">`);
+
+    // Meta row
+    html.push(`<div class="topic-meta">
+      ${platformTag(t.platform)}
+      ${postTypeTag(t.postType)}
+      <span class="topic-date">${esc(formatDate(t.proposedDate))} ${esc(t.proposedTime || '')}</span>
+    </div>`);
+
+    // Body
+    html.push(`<div class="topic-body" id="body-${t.id}">${esc(displayText)}</div>`);
+    if (t.angle) {
+      html.push(`<div class="topic-angle">Angle: ${esc(t.angle)}</div>`);
+    }
+
+    // Actions
+    const appActive = status === 'approved' ? 'active' : '';
+    const rejActive = status === 'rejected' ? 'active' : '';
+    const editActive = (state.editedText && status !== 'rejected') ? 'active' : '';
+
+    html.push(`<div class="topic-actions">
+      <button class="btn-sm btn-approve ${appActive}" onclick="setStatus('${t.id}', 'approved')">✓ Approve</button>
+      <button class="btn-sm btn-reject  ${rejActive}" onclick="setStatus('${t.id}', 'rejected')">✕ Reject</button>
+      <button class="btn-sm btn-edit   ${editActive}" onclick="toggleEdit('${t.id}')">✎ Edit</button>
+    </div>`);
+
+    // Inline edit area
+    const editOpen = false; // collapsed by default; editing opens it via JS
+    html.push(`<div class="topic-edit-area" id="edit-${t.id}">
+      <textarea id="textarea-${t.id}" rows="3">${esc(state.editedText || t.topic)}</textarea>
+      <div class="topic-edit-buttons">
+        <button class="btn-sm btn-save"   onclick="saveEdit('${t.id}', '${esc(t.topic).replace(/'/g,"\\'")}')">Save Edit</button>
+        <button class="btn-sm btn-cancel" onclick="cancelEdit('${t.id}')">Cancel</button>
+      </div>
+    </div>`);
+
+    html.push('</div>');
+  });
+
+  area.innerHTML = html.join('');
+  updateSubmitPanel();
+}
+
+// ---------------------------------------------------------------------------
+// Card actions
+// ---------------------------------------------------------------------------
+function setStatus(id, status) {
+  if (!topicsState[id]) topicsState[id] = {};
+  topicsState[id].status = status;
+
+  // Persist to API
+  patchProposal([{ id, status }]);
+
+  // Re-render just this card's classes + buttons
+  renderTopics();
+}
+
+function toggleEdit(id) {
+  const editArea = document.getElementById('edit-' + id);
+  const isOpen   = editArea.classList.contains('open');
+  if (isOpen) {
+    editArea.classList.remove('open');
+  } else {
+    editArea.classList.add('open');
+    editArea.querySelector('textarea').focus();
+  }
+}
+
+function cancelEdit(id) {
+  const editArea = document.getElementById('edit-' + id);
+  editArea.classList.remove('open');
+  // Restore textarea to current saved value
+  const state = topicsState[id] || {};
+  const topic = [...allTopics, ...customTopics].find(t => t.id === id);
+  editArea.querySelector('textarea').value = state.editedText || (topic ? topic.topic : '');
+}
+
+function saveEdit(id) {
+  const editArea = document.getElementById('edit-' + id);
+  const newText  = editArea.querySelector('textarea').value.trim();
+  if (!newText) return;
+
+  if (!topicsState[id]) topicsState[id] = {};
+  topicsState[id].editedText = newText;
+  if (topicsState[id].status !== 'approved') {
+    topicsState[id].status = 'approved';
+  }
+
+  patchProposal([{ id, editedText: newText, status: topicsState[id].status }]);
+  renderTopics();
+}
+
+// ---------------------------------------------------------------------------
+// Custom topics
+// ---------------------------------------------------------------------------
+let customIdCounter = 0;
+
+function toggleCustomForm() {
+  const form = document.getElementById('customTopicForm');
+  const btn  = document.getElementById('addCustomBtn');
+  const isOpen = form.classList.contains('open');
+  if (isOpen) {
+    form.classList.remove('open');
+    btn.textContent = '+ Add Custom Topic';
+  } else {
+    form.classList.add('open');
+    btn.textContent = '— Cancel';
+    document.getElementById('customText').focus();
+  }
+}
+
+function addCustomTopic() {
+  const platform = document.getElementById('customPlatform').value;
+  const postType = document.getElementById('customPostType').value;
+  const date     = document.getElementById('customDate').value.trim();
+  const time     = document.getElementById('customTime').value.trim();
+  const text     = document.getElementById('customText').value.trim();
+
+  if (!text) { alert('Enter post copy for the custom topic.'); return; }
+
+  const id = 'custom-' + (++customIdCounter);
+  const topic = { id, platform, postType, proposedDate: date, proposedTime: time, topic: text, isCustom: true };
+  customTopics.push(topic);
+  topicsState[id] = { status: 'approved' };
+
+  // Clear form
+  document.getElementById('customText').value = '';
+  document.getElementById('customDate').value = '';
+  document.getElementById('customTime').value = '';
+  toggleCustomForm();
+  renderTopics();
+}
+
+// ---------------------------------------------------------------------------
+// API calls
+// ---------------------------------------------------------------------------
+function patchProposal(updates) {
+  fetch('/api/review/proposal', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + authSecret,
+    },
+    body: JSON.stringify({ updates }),
+  }).catch(err => console.warn('[patchProposal] failed:', err));
+}
+
+function doSubmit() {
+  const btn = document.getElementById('submitBtn');
+  const msg = document.getElementById('submitMsg');
+  msg.className = 'msg';
+
+  const approved = getApprovedTopics();
+  if (approved.length === 0) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  fetch('/api/review/submit', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + authSecret,
+    },
+    body: JSON.stringify({ approvedTopics: approved }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        btn.textContent = 'Schedule Submitted!';
+        btn.classList.add('success');
+        showMsg(msg, 'success', `${data.topicCount} topic${data.topicCount !== 1 ? 's' : ''} sent for content generation. The team will have drafts ready shortly.`);
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Generate Content Schedule';
+        showMsg(msg, 'error', data.error || 'Submit failed.');
+      }
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.textContent = 'Generate Content Schedule';
+      showMsg(msg, 'error', 'Could not reach server. Try again.');
+    });
+}
+
+// ---------------------------------------------------------------------------
+// Submit panel
+// ---------------------------------------------------------------------------
+function getApprovedTopics() {
+  const all = [...allTopics, ...customTopics];
+  return all
+    .filter(t => (topicsState[t.id] || {}).status === 'approved')
+    .map(t => {
+      const state = topicsState[t.id] || {};
+      return {
+        id: t.id,
+        platform: t.platform,
+        proposedDate: t.proposedDate,
+        proposedTime: t.proposedTime,
+        postType: t.postType,
+        topic: t.topic,
+        ...(state.editedText ? { editedText: state.editedText } : {}),
+      };
+    });
+}
+
+function updateSubmitPanel() {
+  const all      = [...allTopics, ...customTopics];
+  const total    = all.length;
+  const approved = getApprovedTopics();
+  const aCount   = approved.length;
+
+  const summary  = document.getElementById('submitSummary');
+  const list     = document.getElementById('submitList');
+  const btn      = document.getElementById('submitBtn');
+
+  if (total === 0) {
+    summary.innerHTML = 'Review topics above to continue.';
+  } else {
+    summary.innerHTML = `<strong>${aCount} of ${total}</strong> topic${aCount !== 1 ? 's' : ''} approved`;
+  }
+
+  if (aCount > 0) {
+    const rows = approved.map(t => {
+      const text = t.editedText || t.topic;
+      return `<div class="submit-list-item">
+        <div class="sli-date">${esc(formatDate(t.proposedDate))}</div>
+        <div class="sli-text">${platformTag(t.platform)} ${esc(text.slice(0, 100))}${text.length > 100 ? '…' : ''}</div>
+      </div>`;
+    });
+    list.innerHTML = rows.join('');
+    list.classList.add('show');
+    btn.disabled = false;
+  } else {
+    list.classList.remove('show');
+    btn.disabled = true;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Utils
+// ---------------------------------------------------------------------------
+function esc(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function showMsg(el, type, text) {
+  el.className = 'msg ' + type;
+  el.textContent = text;
+}
+</script>
+
+</body>
+</html>
