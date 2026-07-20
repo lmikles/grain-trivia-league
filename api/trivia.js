@@ -41,7 +41,7 @@
  *   weekNumber  number   — Week number in season; used to encourage fresh questions
  *   avoidList   string[] — Questions from previous weeks to avoid repeating
  *
- * Required env vars: OPENAI_API_KEY (primary), ANTHROPIC_API_KEY (fallback), HOST_SECRET (+ per-store secrets)
+ * Required env vars: OPENAI_API_KEY (primary), OPENROUTER_API_KEY (fallback), HOST_SECRET (+ per-store secrets)
  */
 
 const { isValidHostSecret } = require('../lib/auth');
@@ -433,7 +433,7 @@ Return ONLY a valid JSON object with no markdown fences, no explanation, nothing
 {"theme":"...","themeReveal":"...","questions":[{"number":1,"question":"...","answer":"...","themeWord":"..."},{"number":2,"question":"...","answer":"...","themeWord":"..."},{"number":3,"question":"...","answer":"...","themeWord":"..."},{"number":4,"question":"...","answer":"...","themeWord":"..."},{"number":5,"question":"...","answer":"...","themeWord":"..."}]}`;
 }
 
-// ─── LLM API calls — GPT-4o primary, Claude Opus fallback (OMG-329) ─────────
+// ─── LLM API calls — GPT-4o primary, OpenRouter (Gemini 2.5 Flash) fallback ──
 
 async function callOpenAI(prompt) {
   const resp = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -460,16 +460,15 @@ async function callOpenAI(prompt) {
   return JSON.parse(cleaned);
 }
 
-async function callClaudeRaw(prompt) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+async function callOpenRouter(prompt) {
+  const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
+      'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
     },
     body: JSON.stringify({
-      model: 'claude-opus-4-5',
+      model: 'google/gemini-2.5-flash',
       max_tokens: 4096,
       messages: [{ role: 'user', content: prompt }],
     }),
@@ -477,11 +476,11 @@ async function callClaudeRaw(prompt) {
 
   if (!resp.ok) {
     const body = await resp.text();
-    throw new Error(`Anthropic API error ${resp.status}: ${body.slice(0, 200)}`);
+    throw new Error(`OpenRouter API error ${resp.status}: ${body.slice(0, 200)}`);
   }
 
   const data = await resp.json();
-  const text = (data.content?.[0]?.text || '').trim();
+  const text = (data.choices?.[0]?.message?.content || '').trim();
   const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
   return JSON.parse(cleaned);
 }
@@ -490,8 +489,8 @@ async function callClaude(prompt) {
   try {
     return await callOpenAI(prompt);
   } catch (err) {
-    console.error('[trivia] GPT-4o failed, falling back to Claude:', err.message);
-    return await callClaudeRaw(prompt);
+    console.error('[trivia] GPT-4o failed, falling back to OpenRouter:', err.message);
+    return await callOpenRouter(prompt);
   }
 }
 
